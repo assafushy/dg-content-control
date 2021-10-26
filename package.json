@@ -1,0 +1,52 @@
+{
+  "name": "dg-content-control",
+  "version": "1.1.39",
+  "description": "TODO: Give a short introduction of your project. Let this section explain the objectives or the motivation behind this project.",
+  "main": "./bin/index.js",
+  "types": "./bin/index.d.ts",
+  "scripts": {
+    "start": "node ./bin/index.js",
+    "build": "tsc",
+    "test": "jest --coverage --forceExit --runInBand"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/assafushy/dg-content-controls.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@doc-gen/dg-data-provider-azuredevops": "^0.0.3",
+    "@doc-gen/dg-skins": "0.0.1",
+    "axios": "^0.21.0",
+    "dotenv": "^8.2.0",
+    "html-table-to-json": "^1.0.0",
+    "node-fetch": "^2.6.1",
+    "request": "^2.88.2",
+    "string-strip-html": "^6.1.1",
+    "winston": "^3.2.1"
+  },
+  "devDependencies": {
+    "@types/jest": "^25.2.3",
+    "@types/node": "^13.13.5",
+    "jest": "^26.6.3",
+    "jest-junit": "^10.0.0",
+    "ts-jest": "^25.5.1",
+    "typescript": "^3.8.3"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "preset": "ts-jest",
+    "testPathIgnorePatterns": [
+      "/bin/"
+    ],
+    "reporters": [
+      "default",
+      "jest-junit"
+    ]
+  },
+  "jest-junit": {
+    "output": "./junit.xml"
+  }
+}
