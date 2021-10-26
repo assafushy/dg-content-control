@@ -52,14 +52,17 @@ export default class ChangeDataFactory {
   async fetchData() {
     let focusedArtifact;
     let artifactChanges;
+    let gitDataProvider = await this.dgDataProviderAzureDevOps.getGitDataProvider()
+    let pipelinesDataProvider = await this.dgDataProviderAzureDevOps.getPipelinesDataProvider()
     if (this.repoId) {
-      focusedArtifact = await this.dgDataProviderAzureDevOps.getGitDataProvider().GetGitRepoFromRepoId(
+      focusedArtifact = await gitDataProvider.GetGitRepoFromRepoId(
         this.repoId
       );
+      console.log(focusedArtifact)
     }
     switch (this.rangeType) {
       case "commitSha":
-        artifactChanges = await this.dgDataProviderAzureDevOps.getGitDataProvider().GetItemsInCommitRange(
+        artifactChanges = gitDataProvider.GetItemsInCommitRange(
           this.teamProject,
           this.repoId,
           String(this.from),
@@ -71,13 +74,13 @@ export default class ChangeDataFactory {
         });
         break;
       case "date":
-        let commitsInDateRange = await this.dgDataProviderAzureDevOps.getGitDataProvider().GetCommitsInDateRange(
+        let commitsInDateRange = await gitDataProvider.GetCommitsInDateRange(
           this.teamProject,
           this.repoId,
           String(this.from),
           String(this.to)
         );
-        artifactChanges = await this.dgDataProviderAzureDevOps.getGitDataProvider().GetItemsInCommitRange(
+        artifactChanges = await gitDataProvider.GetItemsInCommitRange(
           this.teamProject,
           this.repoId,
           commitsInDateRange.value[commitsInDateRange.count - 1].commitId,
@@ -89,11 +92,11 @@ export default class ChangeDataFactory {
         });
         break;
       case "pipeline":
-        focusedArtifact = await this.dgDataProviderAzureDevOps.getPipelinesDataProvider().getPipelineFromPipelineId(
+        focusedArtifact = await pipelinesDataProvider.getPipelineFromPipelineId(
           this.teamProject,
           Number(this.to)
         );
-        artifactChanges = await this.dgDataProviderAzureDevOps.getGitDataProvider().GetItemsForPipelinesRange(
+        artifactChanges = await gitDataProvider.GetItemsForPipelinesRange(
           this.teamProject,
           Number(this.from),
           Number(this.to)
@@ -105,11 +108,11 @@ export default class ChangeDataFactory {
         break;
       case "release":
         //get list of artifacts for each release
-        let fromRelease = await this.dgDataProviderAzureDevOps.getPipelinesDataProvider().GetReleaseByReleaseId(
+        let fromRelease = await pipelinesDataProvider.GetReleaseByReleaseId(
           this.teamProject,
           Number(this.from)
         );
-        let toRelease = await this.dgDataProviderAzureDevOps.getPipelinesDataProvider().GetReleaseByReleaseId(
+        let toRelease = await pipelinesDataProvider.GetReleaseByReleaseId(
           this.teamProject,
           Number(this.to)
         );

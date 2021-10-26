@@ -23,7 +23,8 @@ export default class AttachmentsDataFactory {
   async fetchWiAttachments() {
     let attachments;
     try {
-        attachments = await this.dgDataProviderAzureDevOps.getTicketsDataProvider().GetWorkitemAttachments(
+        let ticketsDataProvider =  await this.dgDataProviderAzureDevOps.getTicketsDataProvider();
+        attachments = await ticketsDataProvider.GetWorkitemAttachments(
         this.teamProject,
         this.wiId
       );
@@ -70,46 +71,7 @@ export default class AttachmentsDataFactory {
           tableCellAttachmentLink: tableCellAttachmentLink
         });
       }
-
-      // await Promise.all(
-      //   attachments.map(async (attachment: any) => {
-      //     let relativeAttachmentLink = "";
-      //     let tableCellAttachmentLink = "";
-      //     let attachmentFileName = attachment.downloadUrl.substring(
-      //       attachment.downloadUrl.lastIndexOf("/") + 1,
-      //       attachment.downloadUrl.length
-      //     );
-      //     let attachmentUrl = attachment.downloadUrl.substring(
-      //       0,
-      //       attachment.downloadUrl.lastIndexOf("/")
-      //     );
-      //     let downloadedAttachmentPath = await this.downloadAttachment(
-      //       attachmentUrl,
-      //       attachmentFileName
-      //     );
-      //     if (downloadedAttachmentPath) {
-      //       relativeAttachmentLink =
-      //         "file:///" +
-      //         downloadedAttachmentPath.substring(
-      //           downloadedAttachmentPath.indexOf("downloads"),
-      //           downloadedAttachmentPath.length
-      //         );
-
-      //       // .replace(/\\/g, "/");
-      //       let pathArray = downloadedAttachmentPath.split(".");
-      //       tableCellAttachmentLink =
-      //         pathArray[0] + "-TableCell." + pathArray[1];
-      //     }
-      //     attachmentData.push({
-      //       attachmentComment: attachment.attributes.comment || "",
-      //       attachmentFileName: attachmentFileName,
-      //       attachmentLink: downloadedAttachmentPath,
-      //       relativeAttachmentLink: relativeAttachmentLink,
-      //       tableCellAttachmentLink: tableCellAttachmentLink
-      //     });
-      //   })
-      // );
-
+      
       return attachmentData;
     } catch (e) {
       logger.error(

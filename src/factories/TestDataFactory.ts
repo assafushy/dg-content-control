@@ -48,13 +48,14 @@ export default class TestDataFactory {
   }
   async fetchTestData() {
     let filteredPlan;
-    let projectTestPlans: any = await this.dgDataProvider.getTestDataProvider().GetTestPlans(
+    let testDataProvider = await this.dgDataProvider.getTestDataProvider();
+    let projectTestPlans: any = await testDataProvider.GetTestPlans(
       this.teamProject
     );
     filteredPlan = projectTestPlans.value.filter(testPlan => {
       return testPlan.id === this.testPlanId;
     });
-    let testSuites: any[] = await this.dgDataProvider.getTestDataProvider().GetTestSuitesByPlan(
+    let testSuites: any[] = await testDataProvider.GetTestSuitesByPlan(
       this.teamProject,
       `${this.testPlanId}`,
       true
@@ -71,7 +72,7 @@ export default class TestDataFactory {
       );
     } //end of if
     try {
-      let allTestCases: any[] = await this.dgDataProvider.getTestDataProvider().GetTestCasesBySuites(
+      let allTestCases: any[] = await testDataProvider.GetTestCasesBySuites(
         this.teamProject,
         `${this.testPlanId}`,
         `${this.testPlanId + 1}`,
@@ -147,7 +148,8 @@ export default class TestDataFactory {
   async populateTestRunData(testCasesWithAttachments: any) {
     await Promise.all(
       testCasesWithAttachments.map(async (testcase, i) => {
-        let testPoints = await this.dgDataProvider.getTestDataProvider().GetTestPoint(
+        let testDataProvider = await this.dgDataProvider.getTestDataProvider();
+        let testPoints = await testDataProvider.GetTestPoint(
           this.teamProject,
           String(this.testPlanId),
           testcase.suit,
@@ -163,7 +165,7 @@ export default class TestDataFactory {
                 try {
                   testCasesWithAttachments[
                     i
-                  ].lastTestRun = await this.dgDataProvider.getTestDataProvider().GetTestRunById(
+                  ].lastTestRun = await testDataProvider.GetTestRunById(
                     this.teamProject,
                     testPoint.lastTestRun.id
                   );

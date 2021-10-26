@@ -64,7 +64,8 @@ export default class TraceDataFactory {
         ids = [].concat.apply([], allPlanIds);
       }
       if (this.queryId) {
-        this.testDataRaw = await this.dgDataProvider.getTicketsDataProvider().GetQueryResultById(
+        let ticketsDataProvider = await this.dgDataProvider.getTicketsDataProvider() 
+        this.testDataRaw = await ticketsDataProvider.GetQueryResultById(
           this.queryId,
           this.teamProject
         );
@@ -78,7 +79,8 @@ export default class TraceDataFactory {
       ids = [];
     }
     try {
-      traceData = await this.dgDataProvider.getTicketsDataProvider().GetLinksByIds(this.teamProject, ids);
+      let ticketsDataProvider = await this.dgDataProvider.getTicketsDataProvider()
+      traceData = ticketsDataProvider.GetLinksByIds(this.teamProject, ids);
       logger.debug(`fetched trace data for ${ids.length} work items`);
     } catch (e) {
       logger.error(`error fetching trcae data`);
@@ -97,13 +99,14 @@ export default class TraceDataFactory {
   */
   async fetchTestData() {
     let filteredPlan;
-    let projectTestPlans: any = await this.dgDataProvider.getTestDataProvider().GetTestPlans(
+    let testDataProvider = await this.dgDataProvider.getTestDataProvider();
+    let projectTestPlans: any = await testDataProvider.GetTestPlans(
       this.teamProject
     );
     filteredPlan = projectTestPlans.value.filter((testPlan) => {
       return testPlan.id === this.testPlanId;
     });
-    let testSuites: any[] = await this.dgDataProvider.getTestDataProvider().GetTestSuitesByPlan(
+    let testSuites: any[] = await testDataProvider.GetTestSuitesByPlan(
       this.teamProject,
       `${this.testPlanId}`,
       true
@@ -120,7 +123,7 @@ export default class TraceDataFactory {
       );
     } //end of if
     try {
-      let allTestCases: any[] = await this.dgDataProvider.getTestDataProvider().GetTestCasesBySuites(
+      let allTestCases: any[] = await testDataProvider.GetTestCasesBySuites(
         this.teamProject,
         `${this.testPlanId}`,
         `${this.testPlanId + 1}`,

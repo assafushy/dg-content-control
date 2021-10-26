@@ -60,7 +60,8 @@ export default class DGContentControls {
       teamProjectName:${this.teamProjectName}`);
     let res: any;
     try {
-      res = await this.dgDataProviderAzureDevOps.getTicketsDataProvider().GetQueryResultById(
+      let ticketsDataProvider = await this.dgDataProviderAzureDevOps.getTicketsDataProvider();
+      res = await ticketsDataProvider.GetQueryResultById(
         queryId,
         this.teamProjectName
       );
@@ -129,7 +130,6 @@ export default class DGContentControls {
         this.dgDataProviderAzureDevOps,
         this.templatePath
       );
-      let test = await testDataFactory.fetchTestData();
     } catch (error) {
       logger.error(`Error initilizing test data factory`);
       console.log(error);
