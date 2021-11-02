@@ -62,7 +62,7 @@ export default class ChangeDataFactory {
     }
     switch (this.rangeType) {
       case "commitSha":
-        artifactChanges = gitDataProvider.GetItemsInCommitRange(
+        artifactChanges = await gitDataProvider.GetItemsInCommitRange(
           this.teamProject,
           this.repoId,
           String(this.from),

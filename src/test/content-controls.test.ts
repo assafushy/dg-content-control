@@ -280,7 +280,7 @@ describe("Generate json document from git Changeset", () => {
     await dgContent.addChangeDescriptionTable(
       "68f2aee7-0864-458e-93ce-320303a080ed",
       "e46f8023be49db94b5cf188b41f7ba9db6fd8274",
-      "4ce7f96f74f10bb60d27d7180a8e46f8023be49db94b5cf188b41f7ba9db6fd8274d1bd44da1ffac",
+      "4ce7f96f74f10bb60d27d7180a8d1bd44da1ffac",
       "commitSha",
       null,
       "change-description-content-control",
@@ -289,20 +289,21 @@ describe("Generate json document from git Changeset", () => {
     let jsonDoc = dgContent.getDocument();
     expect(jsonDoc.contentControls.length).toBeGreaterThan(0);
   });
-  test.skip("Generate changeset table from date range", async () => {
+  test("Generate changeset table from date range", async () => {
     let dgContent = new DGContentControls(
-      "http://org-azdo/tfs/org/",
-      "6pxdmymhuk4a67cbp6phuhwh6kczps5rhmacb23i33sib333ln2a",
-      "DevOps",
+      orgUrl,
+      token,
+      "tests",
       "json",
-      "C:\\docgen\\documents\\svd-test\\SVD.dotx"
+      "path:\\assaf"
     );
+
 
     await dgContent.init();
     await dgContent.addChangeDescriptionTable(
-      "95c0c5dd-fefd-411e-bb6b-850e7ce7732a",
-      "2020-01-30T12:51:51Z",
-      "2021-07-22T12:51:51Z",
+      "68f2aee7-0864-458e-93ce-320303a080ed",
+      "2018-09-30T12:51:51Z",
+      "2021-10-24T12:51:51Z",
       "date",
       null,
       "change-description-content-control",
@@ -311,20 +312,20 @@ describe("Generate json document from git Changeset", () => {
     let jsonDoc = dgContent.getDocument();
     expect(jsonDoc.contentControls.length).toBeGreaterThan(0);
   });
-  test.skip("Generate changeset table from pipeline range", async () => {
+  test("Generate changeset table from pipeline range", async () => {
     let dgContent = new DGContentControls(
-      "http://org-azdo/tfs/org/",
-      "6pxdmymhuk4a67cbp6phuhwh6kczps5rhmacb23i33sib333ln2a",
-      "DevOps",
+      orgUrl,
+      token,
+      "tests",
       "json",
-      "C:\\docgen\\documents\\svd-test\\SVD.dotx"
+      "path:\\assaf"
     );
 
     await dgContent.init();
     await dgContent.addChangeDescriptionTable(
-      "95c0c5dd-fefd-411e-bb6b-850e7ce7732a",
-      18501,
-      19752,
+      "68f2aee7-0864-458e-93ce-320303a080ed",
+      244,
+      245,
       "pipeline",
       null,
       "change-description-content-control",
@@ -333,20 +334,20 @@ describe("Generate json document from git Changeset", () => {
     let jsonDoc = dgContent.getDocument();
     expect(jsonDoc.contentControls.length).toBeGreaterThan(0);
   });
-  test.skip("Generate changeset table from release range", async () => {
+  test("Generate changeset table from release range", async () => {
     let dgContent = new DGContentControls(
-      "http://org-azdo/tfs/org/",
-      "6pxdmymhuk4a67cbp6phuhwh6kczps5rhmacb23i33sib333ln2a",
-      "DevOps",
+      orgUrl,
+      token,
+      "tests",
       "json",
-      "C:\\docgen\\documents\\svd-test\\SVD.dotx"
+      "path:\\assaf"
     );
 
     await dgContent.init();
     await dgContent.addChangeDescriptionTable(
-      "95c0c5dd-fefd-411e-bb6b-850e7ce7732a",
-      163,
-      223,
+      "68f2aee7-0864-458e-93ce-320303a080ed",
+      1,
+      2,
       "release",
       null,
       "change-description-content-control",
