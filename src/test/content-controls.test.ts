@@ -280,7 +280,7 @@ describe("Generate json document from git Changeset", () => {
     await dgContent.addChangeDescriptionTable(
       "68f2aee7-0864-458e-93ce-320303a080ed",
       "e46f8023be49db94b5cf188b41f7ba9db6fd8274",
-      "4ce7f96f74f10bb60d27d7180a8e46f8023be49db94b5cf188b41f7ba9db6fd8274d1bd44da1ffac",
+      "4ce7f96f74f10bb60d27d7180a8d1bd44da1ffac",
       "commitSha",
       null,
       "change-description-content-control",
@@ -291,11 +291,11 @@ describe("Generate json document from git Changeset", () => {
   });
   test.skip("Generate changeset table from date range", async () => {
     let dgContent = new DGContentControls(
-      "http://org-azdo/tfs/org/",
-      "6pxdmymhuk4a67cbp6phuhwh6kczps5rhmacb23i33sib333ln2a",
-      "DevOps",
+      orgUrl,
+      token,
+      "tests",
       "json",
-      "C:\\docgen\\documents\\svd-test\\SVD.dotx"
+      "path:\\assaf"
     );
 
     await dgContent.init();
