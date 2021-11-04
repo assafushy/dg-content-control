@@ -1,4 +1,4 @@
-import DgDataProviderAzureDevOps from '@doc-gen/dg-data-provider-azuredevops'
+import DgDataProviderAzureDevOps from "@doc-gen/dg-data-provider-azuredevops";
 import logger from "../services/logger";
 import ChangesTableDataSkinAdapter from "../adapters/ChangesTableDataSkinAdapter";
 
@@ -46,19 +46,18 @@ export default class ChangeDataFactory {
     this.repoId = repoId;
     this.rangeType = rangeType;
     this.linkTypeFilterArray = linkTypeFilterArray;
-  }//constructor
-  
+  } //constructor
+
   /*fetches Change table data and adopts it to json skin format */
   async fetchData() {
     let focusedArtifact;
     let artifactChanges;
-    let gitDataProvider = await this.dgDataProviderAzureDevOps.getGitDataProvider()
-    let pipelinesDataProvider = await this.dgDataProviderAzureDevOps.getPipelinesDataProvider()
+    let gitDataProvider =
+      await this.dgDataProviderAzureDevOps.getGitDataProvider();
+    let pipelinesDataProvider =
+      await this.dgDataProviderAzureDevOps.getPipelinesDataProvider();
     if (this.repoId) {
-      focusedArtifact = await gitDataProvider.GetGitRepoFromRepoId(
-        this.repoId
-      );
-      console.log(focusedArtifact)
+      focusedArtifact = await gitDataProvider.GetGitRepoFromRepoId(this.repoId);
     }
     switch (this.rangeType) {
       
@@ -163,8 +162,8 @@ export default class ChangeDataFactory {
         break;
     }
     logger.info(`fetch ${this.rawChangesArray.length} changes for range`);
-  }//fetchData
-  
+  } //fetchData
+
   /*arranging the test data for json skins package*/
   async jsonSkinDataAdpater() {
     let changesTableDataSkinAdapter = new ChangesTableDataSkinAdapter(
@@ -172,13 +171,13 @@ export default class ChangeDataFactory {
     );
     changesTableDataSkinAdapter.adoptSkinData();
     this.adoptedChangeData = changesTableDataSkinAdapter.getAdoptedData();
-  }//jsonSkinDataAdpater
-  
+  } //jsonSkinDataAdpater
+
   getRawData() {
     return this.rawChangesArray;
-  }//getRawData
-  
+  } //getRawData
+
   getAdoptedData() {
     return this.adoptedChangeData;
-  }//getAdoptedData
+  } //getAdoptedData
 }
