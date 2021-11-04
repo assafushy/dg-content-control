@@ -61,36 +61,41 @@ export default class ChangeDataFactory {
       console.log(focusedArtifact)
     }
     switch (this.rangeType) {
+      
       case "commitSha":
-        artifactChanges = await gitDataProvider.GetItemsInCommitRange(
-          this.teamProject,
-          this.repoId,
-          String(this.from),
-          String(this.to)
-        );
-        this.rawChangesArray.push({
-          artifact: focusedArtifact,
-          changes: artifactChanges,
-        });
-        break;
-      case "date":
-        let commitsInDateRange = await gitDataProvider.GetCommitsInDateRange(
-          this.teamProject,
-          this.repoId,
-          String(this.from),
-          String(this.to)
-        );
-        artifactChanges = await gitDataProvider.GetItemsInCommitRange(
-          this.teamProject,
-          this.repoId,
-          commitsInDateRange.value[commitsInDateRange.count - 1].commitId,
-          commitsInDateRange.value[0].commitId
-        );
-        this.rawChangesArray.push({
-          artifact: focusedArtifact,
-          changes: artifactChanges,
-        });
-        break;
+        let commitsInCommitRange = await gitDataProvider.GetCommitsInCommitRange(
+           this.teamProject,
+           this.repoId,
+           String(this.from),
+           String(this.to)
+         );
+         artifactChanges = await gitDataProvider.GetItemsInCommitRange(
+           this.teamProject,
+           this.repoId,
+           commitsInCommitRange
+         );
+         this.rawChangesArray.push({
+           artifact: focusedArtifact,
+           changes: artifactChanges,
+         });
+         break;
+       case "date":
+         let commitsInDateRange = await gitDataProvider.GetCommitsInDateRange(
+           this.teamProject,
+           this.repoId,
+           String(this.from),
+           String(this.to)
+         );
+         artifactChanges = await gitDataProvider.GetItemsInCommitRange(
+           this.teamProject,
+           this.repoId,
+           commitsInDateRange
+         );
+         this.rawChangesArray.push({
+           artifact: focusedArtifact,
+           changes: artifactChanges,
+         });
+         break;
       case "pipeline":
         focusedArtifact = await pipelinesDataProvider.getPipelineFromPipelineId(
           this.teamProject,

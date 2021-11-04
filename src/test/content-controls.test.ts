@@ -280,15 +280,14 @@ describe("Generate json document from git Changeset", () => {
     await dgContent.init();
     await dgContent.addChangeDescriptionTable(
       "68f2aee7-0864-458e-93ce-320303a080ed",
-      "e46f8023be49db94b5cf188b41f7ba9db6fd8274",
       "4ce7f96f74f10bb60d27d7180a8d1bd44da1ffac",
+      "e46f8023be49db94b5cf188b41f7ba9db6fd8274",
       "commitSha",
       null,
       "change-description-content-control",
       4
     );
     let jsonDoc = dgContent.getDocument();
-    writeFileSync("doc.json", JSON.stringify(jsonDoc));
     expect(jsonDoc.contentControls.length).toBeGreaterThan(0);
   });
   test("Generate changeset table from date range", async () => {
@@ -303,7 +302,7 @@ describe("Generate json document from git Changeset", () => {
     await dgContent.init();
     await dgContent.addChangeDescriptionTable(
       "68f2aee7-0864-458e-93ce-320303a080ed",
-      "2018-09-30T12:51:51Z",
+      "2018-10-21T12:51:51Z",
       "2021-10-24T12:51:51Z",
       "date",
       null,
@@ -325,7 +324,7 @@ describe("Generate json document from git Changeset", () => {
     await dgContent.init();
     await dgContent.addChangeDescriptionTable(
       "68f2aee7-0864-458e-93ce-320303a080ed",
-      245,
+      244,
       244,
       "pipeline",
       null,
@@ -335,6 +334,7 @@ describe("Generate json document from git Changeset", () => {
     let jsonDoc = dgContent.getDocument();
     expect(jsonDoc.contentControls[0].wordObjects.length).toBeGreaterThan(1);
   });
+  
   test("Generate changeset table from release range", async () => {
     let dgContent = new DGContentControls(
       orgUrl,
@@ -348,7 +348,7 @@ describe("Generate json document from git Changeset", () => {
     await dgContent.addChangeDescriptionTable(
       "68f2aee7-0864-458e-93ce-320303a080ed",
       1,
-      2,
+      1,
       "release",
       null,
       "change-description-content-control",
