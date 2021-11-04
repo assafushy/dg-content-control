@@ -2,6 +2,7 @@ import DGContentControls from "../index";
 import RichTextDataFactory from "../factories/RichTextDataFactory";
 import TestResultGroupSummaryDataSkinAdapter from "../adapters/TestResultGroupSummaryDataSkinAdapter";
 import DownloadManager from "../services/DownloadManager";
+import { writeFileSync } from "fs";
 jest.setTimeout(30000000);
 require("dotenv").config();
 
@@ -287,6 +288,7 @@ describe("Generate json document from git Changeset", () => {
       4
     );
     let jsonDoc = dgContent.getDocument();
+    writeFileSync("doc.json", JSON.stringify(jsonDoc));
     expect(jsonDoc.contentControls.length).toBeGreaterThan(0);
   });
   test("Generate changeset table from date range", async () => {
@@ -297,7 +299,6 @@ describe("Generate json document from git Changeset", () => {
       "json",
       "path:\\assaf"
     );
-
 
     await dgContent.init();
     await dgContent.addChangeDescriptionTable(
@@ -310,7 +311,7 @@ describe("Generate json document from git Changeset", () => {
       4
     );
     let jsonDoc = dgContent.getDocument();
-    expect(jsonDoc.contentControls.length).toBeGreaterThan(0);
+    expect(jsonDoc.contentControls[0].wordObjects.length).toBeGreaterThan(1);
   });
   test("Generate changeset table from pipeline range", async () => {
     let dgContent = new DGContentControls(
@@ -324,15 +325,15 @@ describe("Generate json document from git Changeset", () => {
     await dgContent.init();
     await dgContent.addChangeDescriptionTable(
       "68f2aee7-0864-458e-93ce-320303a080ed",
-      244,
       245,
+      244,
       "pipeline",
       null,
       "change-description-content-control",
       4
     );
     let jsonDoc = dgContent.getDocument();
-    expect(jsonDoc.contentControls.length).toBeGreaterThan(0);
+    expect(jsonDoc.contentControls[0].wordObjects.length).toBeGreaterThan(1);
   });
   test("Generate changeset table from release range", async () => {
     let dgContent = new DGContentControls(
@@ -354,7 +355,7 @@ describe("Generate json document from git Changeset", () => {
       4
     );
     let jsonDoc = dgContent.getDocument();
-    expect(jsonDoc.contentControls.length).toBeGreaterThan(0);
+    expect(jsonDoc.contentControls[0].wordObjects.length).toBeGreaterThan(1);
   });
 });
 describe.skip("Rich Text Data factory Tests", () => {
