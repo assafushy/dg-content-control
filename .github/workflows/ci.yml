@@ -1,4 +1,4 @@
-name: "🚀 publish"
+name: "🚀 CI"
 on:
   pull_request:
     branches:
