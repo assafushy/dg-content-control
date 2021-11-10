@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - main
-
 jobs:
   release:
     name: 🚀 publish
@@ -18,11 +17,11 @@ jobs:
           registry-url: https://registry.npmjs.org
       - name: "Automated Version Bump"
         uses: "phips28/gh-action-bump-version@master"
+        id: bump_version
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           commit-message: "CI: bumps version to {{version}} [skip ci]"
-        id: bump_version
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
       - name: Set up Docker Buildx
@@ -32,6 +31,9 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: get-npm-version
+        id: package-version
+        uses: martinbeentjes/npm-get-version-action@master
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
@@ -39,8 +41,7 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
-            assafushy/dg-content-control-generator:latest
-            assafushy/dg-content-control-generator:{{steps.bump_version.version}}
+            assafushy/dg-content-control-generator:${{steps.package-version.outputs.current-version}}
 
       # - name: Login to GitHub Container Registry
       #   uses: docker/login-action@v1
