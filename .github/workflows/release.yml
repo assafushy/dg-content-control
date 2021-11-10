@@ -22,6 +22,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           commit-message: "CI: bumps version to {{version}} [skip ci]"
+        id: bump_version
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
       - name: Set up Docker Buildx
@@ -39,7 +40,7 @@ jobs:
           push: true
           tags: |
             assafushy/dg-content-control-generator:latest
-            assafushy/dg-content-control-generator:{{version}}
+            assafushy/dg-content-control-generator:{{steps.bump_version.version}}
 
       # - name: Login to GitHub Container Registry
       #   uses: docker/login-action@v1
