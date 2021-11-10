@@ -1,4 +1,4 @@
-import DGContentControls from "../index";
+import DGContentControls from "../controllers/index";
 import RichTextDataFactory from "../factories/RichTextDataFactory";
 import TestResultGroupSummaryDataSkinAdapter from "../adapters/TestResultGroupSummaryDataSkinAdapter";
 import DownloadManager from "../services/DownloadManager";
@@ -277,7 +277,7 @@ describe("Generate json document from git Changeset", () => {
     );
 
     await dgContent.init();
-    await dgContent.addChangeDescriptionTable(
+    let jsonDoc = await dgContent.addChangeDescriptionTable(
       "68f2aee7-0864-458e-93ce-320303a080ed",
       "e46f8023be49db94b5cf188b41f7ba9db6fd8274",
       "4ce7f96f74f10bb60d27d7180a8d1bd44da1ffac",
@@ -286,8 +286,7 @@ describe("Generate json document from git Changeset", () => {
       "change-description-content-control",
       4
     );
-    let jsonDoc = dgContent.getDocument();
-    expect(jsonDoc.contentControls.length).toBeGreaterThan(0);
+    expect(jsonDoc.wordObjects.length).toBeGreaterThan(0);
   });
   test.skip("Generate changeset table from date range", async () => {
     let dgContent = new DGContentControls(

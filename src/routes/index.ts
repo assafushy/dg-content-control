@@ -1,26 +1,52 @@
 import { Request, Response } from "express";
-import { DocumentsGeneratorController } from "../controllers/DocumentsGeneratorController";
-import { eventEmmiter } from "../services/socketManager";
-import moment from "moment";
+import { StatusCodes } from "http-status-codes";
+import logger from "../services/logger";
+import DgContentControls from "../controllers";
 
 export class Routes {
-  public documentsGeneratorController: DocumentsGeneratorController =
-    new DocumentsGeneratorController();
-
   public routes(app: any): void {
-    app.route("/jsonDocument").get((req: Request, res: Response) => {
-      res.status(200).json({ status: "online - " + moment().format() });
-    });
+    app
+      .route("/generate-doc-template")
+      .post(async ({ body }: Request, res: Response) => {
+        try {
+          const dgContentControls = new DgContentControls(
+            body.orgUrl,
+            body.token,
+            body.projectName,
+            body.outputType,
+            body.templateUrl
+          );
+          await dgContentControls.init();
+          let resJson: any = await dgContentControls.generateDocTemplate(
+            body.outputType,
+            body.templateUrl
+          );
+          res.status(StatusCodes.OK).json(resJson);
+        } catch (error) {}
+      });
 
     app
-      .route("/jsonDocument/create")
-      .post(async (req: Request, res: Response) => {
-        await eventEmmiter(global.io, "document-status", {
-          documentId: req.body.documentId,
-          status: "Creating Document",
-        });
-        this.documentsGeneratorController.createJSONDoc(req, res);
-        res.status(200).json({ status: "ok" });
+      .route("/generate-content-control")
+      .post(async ({ body }: Request, res: Response) => {
+        try {
+          const dgContentControls = new DgContentControls(
+            body.orgUrl,
+            body.token,
+            body.projectName,
+            body.outputType,
+            body.templateUrl
+          );
+          logger.info(`request recieved with body :
+          ${JSON.stringify(body)}`);
+          await dgContentControls.init();
+          let resJson: any = await dgContentControls.generateContentControl(
+            body.contentControlOptions
+          );
+          res.status(StatusCodes.OK).json(resJson);
+        } catch (error) {
+          res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(error);
+          logger.error(`server error : ${JSON.stringify(error)}`);
+        }
       });
   }
 }

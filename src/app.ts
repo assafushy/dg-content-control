@@ -1,7 +1,24 @@
 import express from "express";
 import * as bodyParser from "body-parser";
-import { Routes } from "./routes/JsonDocRoutes";
-import { injectRootSpan } from "./helpers/openTracing/tracer-middleware";
+import { Routes } from "./routes";
+
+//add metrics route , for monitoring
+const promBundle = require("express-prom-bundle");
+
+const metricsMiddleware = promBundle({
+  includeMethod: true,
+  includePath: true,
+  includeStatusCode: true,
+  includeUp: true,
+  customLabels: {
+    project_name: "hello_world",
+    project_type: "test_metrics_labels",
+  },
+  promClient: {
+    collectDefaultMetrics: {},
+  },
+});
+
 export default class App {
   public app: express.Application;
   public routePrv: Routes = new Routes();
@@ -9,11 +26,11 @@ export default class App {
   constructor() {
     this.app = express();
     this.config();
-    this.app.use(injectRootSpan);
     this.routePrv.routes(this.app);
   }
 
   private config(): void {
+    this.app.use(metricsMiddleware);
     this.app.use(bodyParser.json());
     this.app.use(bodyParser.urlencoded({ extended: false }));
   }
