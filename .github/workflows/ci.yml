@@ -37,7 +37,7 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
-            assafushy/dg-content-control-generator:{{version}}-{{GITHUB_BASE_REF}}
+            assafushy/dg-content-control-generator:${{version}}-${{GITHUB_BASE_REF}}
 
       # - name: Login to GitHub Container Registry
       #   uses: docker/login-action@v1
