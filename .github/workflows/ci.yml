@@ -34,21 +34,27 @@ jobs:
       - name: get-npm-version
         id: package-version
         uses: martinbeentjes/npm-get-version-action@master
-      - name: Display $GITHUB_BASE_REF
-        run: echo "::set-output name=github-base-ref::$GITHUB_BASE_REF"
-        id: github-base-ref
-      - name: Display $GITHUB_ACTION
-        run: echo "::set-output name=github-action::$GITHUB_ACTION"
-        id: github-action
+      - name: setting image names
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          # list of Docker images to use as base name for tags
+          images: |
+            assafushy/dg-content-control-generator
+          # generate Docker tags based on the following events/attributes
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{major}}.{{minor}} 
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
           context: .
           platforms: linux/amd64,linux/arm64
           push: truegithub-base-ref
-          tags: |
-            assafushy/dg-content-control-generator:${{steps.package-version.outputs.current-version}}-${{steps.github-base-ref.outputs.github-base-ref}}-${{steps.github-action.outputs.github-action}}
-
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
       # - name: Login to GitHub Container Registry
       #   uses: docker/login-action@v1
       #   with:
