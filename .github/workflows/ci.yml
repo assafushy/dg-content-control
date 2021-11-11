@@ -27,7 +27,6 @@ jobs:
       - name: get-npm-version
         id: package-version
         uses: martinbeentjes/npm-get-version-action@master
-      - name: setting image names
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
