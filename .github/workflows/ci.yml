@@ -34,8 +34,8 @@ jobs:
       - name: get-npm-version
         id: package-version
         uses: martinbeentjes/npm-get-version-action@master
-      - name: Display $GITHUB_REF
-        run: echo $GITHUB_REF
+      - name: Display $GITHUB_REF_NAME
+        run: echo "::set-output name=github-ref-name::$GITHUB_REF_NAME"
         id: github-ref
       - name: Build and push
         uses: docker/build-push-action@v2
@@ -44,7 +44,7 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
-            assafushy/dg-content-control-generator:${{steps.package-version.outputs.current-version}}-${{steps.github-ref.outputs}}-$GITHUB_ACTION
+            assafushy/dg-content-control-generator:${{steps.package-version.outputs.current-version}}-${{steps.github-ref.outputs.github-ref-name}}-$GITHUB_ACTION
 
       # - name: Login to GitHub Container Registry
       #   uses: docker/login-action@v1
