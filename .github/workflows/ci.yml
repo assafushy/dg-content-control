@@ -15,13 +15,6 @@ jobs:
         with:
           node-version: 14
           registry-url: https://registry.npmjs.org
-      - name: "Automated Version Bump"
-        uses: "phips28/gh-action-bump-version@master"
-        id: bump_version
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          commit-message: "CI: bumps version to {{version}} [skip ci]"
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
       - name: Set up Docker Buildx
@@ -35,26 +28,13 @@ jobs:
         id: package-version
         uses: martinbeentjes/npm-get-version-action@master
       - name: setting image names
-      - name: Docker meta
-        id: meta
-        uses: docker/metadata-action@v3
-        with:
-          # list of Docker images to use as base name for tags
-          images: |
-            assafushy/dg-content-control-generator
-          # generate Docker tags based on the following events/attributes
-          tags: |
-            type=ref,event=branch
-            type=ref,event=pr
-            type=semver,pattern={{major}}.{{minor}} 
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
           context: .
           platforms: linux/amd64,linux/arm64
           push: truegithub-base-ref
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: assafushy/dg-content-control-generator:${{steps.package-version.outputs.current-version}}
       # - name: Login to GitHub Container Registry
       #   uses: docker/login-action@v1
       #   with:
