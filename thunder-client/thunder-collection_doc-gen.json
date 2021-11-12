@@ -1,0 +1,59 @@
+{
+  "client": "Thunder Client",
+  "collectionName": "doc-gen",
+  "dateExported": "2021-11-10T15:37:22.952Z",
+  "version": "1.1",
+  "folders": [],
+  "requests": [
+    {
+      "containerId": "",
+      "sortNum": 10000,
+      "headers": [
+        { "name": "Accept", "value": "*/*" },
+        {
+          "name": "User-Agent",
+          "value": "Thunder Client (https://www.thunderclient.io)"
+        }
+      ],
+      "colId": "28f048ae-55e0-4d75-b9ec-386e802d6638",
+      "name": "get-change-table-content-control",
+      "url": "http://localhost:3000/generate-content-control",
+      "method": "POST",
+      "modified": "2021-11-10T15:29:03.620Z",
+      "created": "2021-11-10T15:22:01.655Z",
+      "_id": "b3aeea36-9be5-417c-8d94-9134c3ebb50b",
+      "params": [],
+      "body": {
+        "type": "json",
+        "raw": "{\r\n  \"orgUrl\":\"{{ORG_URL}}\",\r\n  \"token\": \"{{PAT}}\",\r\n  \"projectName\": \"tests\",\r\n  \"outputType\": \"json\",\r\n  \"templateUrl\": \"test-template\",\r\n  \"contentControlOptions\": {\r\n    \"type\": \"change-description-table\",\r\n    \"repoId\":\"68f2aee7-0864-458e-93ce-320303a080ed\",\r\n    \"from\":\"e46f8023be49db94b5cf188b41f7ba9db6fd8274\",\r\n    \"to\":\"4ce7f96f74f10bb60d27d7180a8d1bd44da1ffac\",\r\n    \"rangeType\":\"commitSha\",\r\n    \"linkTypeFilterArray\":null,\r\n    \"title\":\"change-description-content-control\",\r\n    \"headingLevel\":4\r\n    }\r\n}\r\n",
+        "form": []
+      },
+      "tests": []
+    },
+    {
+      "containerId": "",
+      "sortNum": 20000,
+      "headers": [
+        { "name": "Accept", "value": "*/*" },
+        {
+          "name": "User-Agent",
+          "value": "Thunder Client (https://www.thunderclient.io)"
+        }
+      ],
+      "colId": "28f048ae-55e0-4d75-b9ec-386e802d6638",
+      "name": "generate-doc-template",
+      "url": "http://localhost:3000/generate-doc-template",
+      "method": "POST",
+      "modified": "2021-11-10T15:31:23.071Z",
+      "created": "2021-11-10T15:30:46.236Z",
+      "_id": "26235615-e440-4433-b4d2-a6674a8a7315",
+      "params": [],
+      "body": {
+        "type": "json",
+        "raw": "\r\n{\r\n  \"orgUrl\":\"{{ORG_URL}}\",\r\n  \"token\": \"{{PAT}}\",\r\n  \"projectName\": \"tests\",\r\n  \"outputType\": \"json\",\r\n  \"templateUrl\": \"test-template\"\r\n}\r\n",
+        "form": []
+      },
+      "tests": []
+    }
+  ]
+}
