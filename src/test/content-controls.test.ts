@@ -266,7 +266,7 @@ describe.skip("Generate json document from test plans - tests", () => {
     expect(jsonDoc.contentControls[0].wordObjects[0].type).toBe("table");
   });
 });
-describe("Generate json document from git Changeset", () => {
+describe("Generate json document from git Changeset", () => { //done
   test("Generate changeset table from commit sha ranges", async () => {
     let dgContent = new DGContentControls(
       orgUrl,
@@ -288,7 +288,7 @@ describe("Generate json document from git Changeset", () => {
     );
     expect(jsonDoc.wordObjects.length).toBeGreaterThan(0);
   });
-  test.skip("Generate changeset table from date range", async () => {
+  test("Generate changeset table from date range", async () => {
     let dgContent = new DGContentControls(
       orgUrl,
       token,
@@ -298,61 +298,58 @@ describe("Generate json document from git Changeset", () => {
     );
 
     await dgContent.init();
-    await dgContent.addChangeDescriptionTable(
-      "95c0c5dd-fefd-411e-bb6b-850e7ce7732a",
-      "2020-01-30T12:51:51Z",
+    let jsonDoc = await dgContent.addChangeDescriptionTable(
+      "68f2aee7-0864-458e-93ce-320303a080ed",
+      "2017-01-30T12:51:51Z",
       "2021-07-22T12:51:51Z",
       "date",
       null,
       "change-description-content-control",
       4
     );
-    let jsonDoc = dgContent.getDocument();
-    expect(jsonDoc.contentControls.length).toBeGreaterThan(0);
+    expect(jsonDoc.wordObjects.length).toBeGreaterThan(0);
   });
-  test.skip("Generate changeset table from pipeline range", async () => {
+  test("Generate changeset table from pipeline range", async () => {
     let dgContent = new DGContentControls(
-      "http://org-azdo/tfs/org/",
-      "6pxdmymhuk4a67cbp6phuhwh6kczps5rhmacb23i33sib333ln2a",
-      "DevOps",
+      orgUrl,
+      token,
+      "tests",
       "json",
-      "C:\\docgen\\documents\\svd-test\\SVD.dotx"
+      "path:\\assaf"
     );
 
     await dgContent.init();
-    await dgContent.addChangeDescriptionTable(
-      "95c0c5dd-fefd-411e-bb6b-850e7ce7732a",
-      18501,
-      19752,
+    let jsonDoc = await dgContent.addChangeDescriptionTable(
+      "68f2aee7-0864-458e-93ce-320303a080ed",
+      244,
+      244,
       "pipeline",
       null,
       "change-description-content-control",
       4
     );
-    let jsonDoc = dgContent.getDocument();
-    expect(jsonDoc.contentControls.length).toBeGreaterThan(0);
+    expect(jsonDoc.wordObjects.length).toBeGreaterThan(1);
   });
-  test.skip("Generate changeset table from release range", async () => {
+  test("Generate changeset table from release range", async () => {
     let dgContent = new DGContentControls(
-      "http://org-azdo/tfs/org/",
-      "6pxdmymhuk4a67cbp6phuhwh6kczps5rhmacb23i33sib333ln2a",
-      "DevOps",
+      orgUrl,
+      token,
+      "tests",
       "json",
-      "C:\\docgen\\documents\\svd-test\\SVD.dotx"
+      "path:\\assaf"
     );
 
     await dgContent.init();
-    await dgContent.addChangeDescriptionTable(
-      "95c0c5dd-fefd-411e-bb6b-850e7ce7732a",
-      163,
-      223,
+    let jsonDoc = await dgContent.addChangeDescriptionTable(
+      "68f2aee7-0864-458e-93ce-320303a080ed",
+      1,
+      1,
       "release",
       null,
       "change-description-content-control",
       4
     );
-    let jsonDoc = dgContent.getDocument();
-    expect(jsonDoc.contentControls.length).toBeGreaterThan(0);
+    expect(jsonDoc.wordObjects.length).toBeGreaterThan(1);
   });
 });
 describe.skip("Rich Text Data factory Tests", () => {
