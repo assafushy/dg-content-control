@@ -8,8 +8,12 @@ services:
       - ./:/usr/src/app
     ports:
       - "3000:3000"
+  dg-api-gate:
+    image: assafushy/dg-api-gate:latest
+    ports:
+      - "3000:3001"
   json-to-word:
-    image: assafushy/json-to-word:latest
+    image: assafushy/json-to-word:test
     ports:
       - "5000:5000"
   s3:
