@@ -17,10 +17,7 @@ export class Routes {
             body.templateUrl
           );
           await dgContentControls.init();
-          let resJson: any = await dgContentControls.generateDocTemplate(
-            body.outputType,
-            body.templateUrl
-          );
+          let resJson: any = await dgContentControls.generateDocTemplate();
           res.status(StatusCodes.OK).json(resJson);
         } catch (error) {}
       });

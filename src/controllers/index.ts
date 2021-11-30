@@ -5,6 +5,10 @@ import TraceDataFactory from "../factories/TraceDataFactory";
 import RichTextDataFactory from "../factories/RichTextDataFactory";
 import ChangeDataFactory from "../factories/ChangeDataFactory";
 import logger from "../services/logger";
+import { json } from "express";
+import contentControl from "../models/contentControl";
+import { trace } from "console";
+
 
 let styles = {
   isBold: false,
@@ -41,17 +45,18 @@ export default class DgContentControls {
     this.dgDataProviderAzureDevOps = new DgDataProviderAzureDevOps(
       this.uri,
       this.PAT
-    );
+      );
+    if (!this.templatePath)
+    {
+      this.templatePath = "template path"
+    }
+    this.skins = new Skins("json",this.templatePath)
     logger.debug(`Initilized`);
     return true;
   } //init
 
-  async generateDocTemplate(
-    outputType: string = "json",
-    templatePath: string = null
-  ) {
+  async generateDocTemplate() {
     try {
-      this.skins = new Skins(outputType, templatePath);
       return this.skins.getDocumentSkin();
     } catch (error) {
       logger.error(`Error initlizing Skins:
@@ -120,7 +125,8 @@ export default class DgContentControls {
     queryId: string,
     contentControlTitle: string,
     skinType: string,
-    headingLevel?: number
+    headingLevel?: number,
+    contentControl?: contentControl
   ) {
     logger.debug(`running GetQueryResultById with params:
       queryId:${queryId}
@@ -154,18 +160,23 @@ export default class DgContentControls {
       });
     });
     try {
+      if (!contentControl){
+        contentControl = { title: contentControlTitle, wordObjects: [] };
+      }
       logger.debug(JSON.stringify(contentControlTitle));
       logger.debug(JSON.stringify(skinType));
       logger.debug(JSON.stringify(styles));
       logger.debug(JSON.stringify(headingLevel));
-
-      return await this.skins.addNewContentToDocumentSkin(
+      let skin =  await this.skins.addNewContentToDocumentSkin(
         contentControlTitle,
         skinType,
         res,
         styles,
         headingLevel
       );
+      contentControl.wordObjects.push(skin);
+      return contentControl;
+
     } catch (error) {
       logger.error(`Error adding content contorl:`);
       console.log(error.data);
@@ -177,15 +188,14 @@ export default class DgContentControls {
     testSuiteArray: number[],
     contentControlTitle: string,
     headingLevel?: number,
-    includeAttachments: boolean = true
+    includeAttachments: boolean = true,
+    contentControl?: contentControl
   ) {
     logger.debug(`fetching test data with params:
       testPlanId:${testPlanId}
       testSuiteArray:${testSuiteArray}
       teamProjectName:${this.teamProjectName}`);
-    let res: any;
     let testDataFactory: TestDataFactory;
-    let testData: any;
     try {
       testDataFactory = new TestDataFactory(
         this.teamProjectName,
@@ -196,16 +206,22 @@ export default class DgContentControls {
         this.dgDataProviderAzureDevOps,
         this.templatePath
       );
+      await testDataFactory.fetchTestData();
+      // await changeDataFactory.jsonSkinDataAdpater();
+      // adoptedChangesData = changeDataFactory.getAdoptedData();
     } catch (error) {
       logger.error(`Error initilizing test data factory`);
       console.log(error);
     }
     try {
+      if (!contentControl){
+        contentControl = { title: contentControlTitle, wordObjects: [] };
+      }
       logger.debug(JSON.stringify(contentControlTitle));
       logger.debug(JSON.stringify(this.skins.SKIN_TYPE_TEST_PLAN));
       logger.debug(JSON.stringify(styles));
       logger.debug(JSON.stringify(headingLevel));
-      return await this.skins.addNewContentToDocumentSkin(
+      let skin = await this.skins.addNewContentToDocumentSkin(
         contentControlTitle,
         this.skins.SKIN_TYPE_TEST_PLAN,
         testDataFactory.adoptedTestData,
@@ -213,6 +229,8 @@ export default class DgContentControls {
         headingLevel,
         includeAttachments
       );
+      contentControl.wordObjects.push(skin);
+      return contentControl;
     } catch (error) {
       logger.error(`Error adding content contorl:`);
       console.log(error.data);
@@ -225,7 +243,9 @@ export default class DgContentControls {
     queryId: string,
     linkTypeFilterArray: string[],
     contentControlTitle: string,
-    headingLevel?: number
+    headingLevel?: number,
+    contentControl?: contentControl
+
   ) {
     let traceFactory;
     logger.debug(`fetching data with params:
@@ -248,18 +268,23 @@ export default class DgContentControls {
       logger.error(`Error initilizing tracedata factory`);
       console.log(error);
     }
-    try {
+      try {
+        if (!contentControl){
+          contentControl = { title: contentControlTitle, wordObjects: [] };
+        }
       logger.debug(JSON.stringify(contentControlTitle));
       logger.debug(JSON.stringify(this.skins.SKIN_TYPE_TEST_PLAN));
       logger.debug(JSON.stringify(styles));
       logger.debug(JSON.stringify(headingLevel));
-      return await this.skins.addNewContentToDocumentSkin(
+      let skin = await this.skins.addNewContentToDocumentSkin(
         contentControlTitle,
         this.skins.SKIN_TYPE_TABLE,
         traceFactory.adoptedData,
         styles,
         headingLevel
       );
+      contentControl.wordObjects.push(skin);
+      return contentControl
     } catch (error) {
       logger.error(`Error adding content contorl:`);
       console.log(error.data);
@@ -271,10 +296,10 @@ export default class DgContentControls {
     testSuiteArray: number[],
     contentControlTitle: string,
     headingLevel?: number,
-    includeAttachments: boolean = true
+    includeAttachments: boolean = true,
+    contentControl?: contentControl
   ) {
     let testDataFactory: TestDataFactory;
-    let testData: any;
     logger.debug(`fetching data with params:
       testPlanId:${testPlanId}
       testSuiteArray:${testSuiteArray}
@@ -295,18 +320,23 @@ export default class DgContentControls {
       console.log(error);
     }
     try {
+      if (!contentControl){
+        contentControl = { title: contentControlTitle, wordObjects: [] };
+      }
       logger.debug(JSON.stringify(contentControlTitle));
       logger.debug(JSON.stringify(this.skins.SKIN_TYPE_TABLE));
       logger.debug(JSON.stringify(styles));
       logger.debug(JSON.stringify(headingLevel));
       let adoptedData = await testDataFactory.getAdoptedTestData();
-      return await this.skins.addNewContentToDocumentSkin(
+      let skin = await this.skins.addNewContentToDocumentSkin(
         contentControlTitle,
-        this.skins.SKIN_TYPE_TABLE,
+        this.skins.SKIN_TYPE_TEST_PLAN,
         adoptedData,
         styles,
         headingLevel
       );
+      contentControl.wordObjects.push(skin);
+      return contentControl
     } catch (error) {
       logger.error(`Error adding content contorl:`);
       console.log(error.data);
@@ -319,7 +349,8 @@ export default class DgContentControls {
     rangeType: string,
     linkTypeFilterArray: string[],
     contentControlTitle: string,
-    headingLevel?: number
+    headingLevel?: number,
+    contentControl?: contentControl
   ) {
     let adoptedChangesData;
     logger.debug(`fetching data with params:
@@ -348,25 +379,26 @@ export default class DgContentControls {
       console.log(error);
     }
     try {
-      let contentControl = { title: contentControlTitle, wordObjects: [] };
-      let skins = new Skins("json", "placeholder");
+      if (!contentControl){
+        contentControl = { title: contentControlTitle, wordObjects: [] };
+      }
       logger.debug(JSON.stringify(contentControlTitle));
-      logger.debug(JSON.stringify(skins.SKIN_TYPE_TABLE));
+      logger.debug(JSON.stringify(this.skins.SKIN_TYPE_TABLE));
       logger.debug(JSON.stringify(styles));
       logger.debug(JSON.stringify(headingLevel));
 
       for (const artifactChangesData of adoptedChangesData) {
-        let paragraphSkin = await skins.addNewContentToDocumentSkin(
+        let paragraphSkin = await this.skins.addNewContentToDocumentSkin(
           contentControlTitle,
-          skins.SKIN_TYPE_PARAGRAPH,
+          this.skins.SKIN_TYPE_PARAGRAPH,
           artifactChangesData.artifact,
           styles,
           headingLevel
         );
 
-        let tableSkin = await skins.addNewContentToDocumentSkin(
+        let tableSkin = await this.skins.addNewContentToDocumentSkin(
           contentControlTitle,
-          skins.SKIN_TYPE_TABLE,
+          this.skins.SKIN_TYPE_TABLE,
           artifactChangesData.artifactChanges,
           styles,
           headingLevel

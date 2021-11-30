@@ -2,216 +2,195 @@ import DGContentControls from "../controllers/index";
 import RichTextDataFactory from "../factories/RichTextDataFactory";
 import TestResultGroupSummaryDataSkinAdapter from "../adapters/TestResultGroupSummaryDataSkinAdapter";
 import DownloadManager from "../services/DownloadManager";
+import { json } from "express";
 jest.setTimeout(30000000);
 require("dotenv").config();
 
 const orgUrl = process.env.ORG_URL;
 const token = process.env.PAT;
 
-describe.skip("Generate json document from queries - tests", () => {
+describe("Generate json document from queries - tests", () => {
   test("generate table content control - flat query", async () => {
     let dgContent = new DGContentControls(
-      "http://org-azdo/tfs/TestCollection/",
-      "m5ootoppncbhyfps5qgi5kn7wvtssjprwzc7onk5hsyrohz2lh4q",
-      "doc-gen-test",
+      orgUrl,
+      token,
+      "tests",
       "json",
-      "c:\\assaf\\SRS.dotx"
+      "path:\\assaf"
     );
     await dgContent.init();
-    await dgContent.addQueryBasedContent(
-      "88402386-34fb-4074-bb9f-a75a0ac24c6f",
+
+    let jsonDoc = await dgContent.addQueryBasedContent(
+      "08e044be-b9bc-4962-99c9-ffebb47ff95a",
       "system-capabilities",
       "table",
       3
     );
-
-    let jsonDoc = dgContent.getDocument();
-    const SnapShot = require("../../samples/snapshots/queries/flat-query-table-snapshot.json");
-    expect(jsonDoc).toMatchObject(SnapShot);
+    expect(jsonDoc.wordObjects.length).toBeGreaterThanOrEqual(1);
   });
   test("generate paragraph content control - flat query", async () => {
     let dgContent = new DGContentControls(
-      "http://org-azdo/tfs/TestCollection/",
-      "m5ootoppncbhyfps5qgi5kn7wvtssjprwzc7onk5hsyrohz2lh4q",
-      "doc-gen-test",
+      orgUrl,
+      token,
+      "tests",
       "json",
-      "c:\\assaf\\SRS.dotx"
+      "path:\\assaf"
     );
     await dgContent.init();
-    await dgContent.addQueryBasedContent(
-      "88402386-34fb-4074-bb9f-a75a0ac24c6f",
+    let jsonDoc = await dgContent.addQueryBasedContent(
+      "08e044be-b9bc-4962-99c9-ffebb47ff95a",
       "system-capabilities",
       "paragraph",
       3
     );
-
-    let jsonDoc = dgContent.getDocument();
-    const SnapShot = require("../../samples/snapshots/queries/flat-query-paragraph-snapshot.json");
-    expect(jsonDoc).toMatchObject(SnapShot);
+    expect(jsonDoc.wordObjects.length).toBeGreaterThanOrEqual(1);
   });
   test("generate table content control - tree query", async () => {
     let dgContent = new DGContentControls(
-      "http://org-azdo/tfs/TestCollection/",
-      "m5ootoppncbhyfps5qgi5kn7wvtssjprwzc7onk5hsyrohz2lh4q",
-      "doc-gen-test",
+      orgUrl,
+      token,
+      "tests",
       "json",
-      "c:\\assaf\\SRS.dotx"
+      "path:\\assaf"
     );
     await dgContent.init();
-    await dgContent.addQueryBasedContent(
-      "46a16d2a-1a2f-4fe3-8c9d-d600ffa9c68b",
+    let jsonDoc = await dgContent.addQueryBasedContent(
+      "253a04bf-7dbe-4d48-ae0e-744ca6428595",
       "system-capabilities",
       "table",
       3
     );
-
-    let jsonDoc = dgContent.getDocument();
-    const SnapShot = require("../../samples/snapshots/queries/tree-query-table-snapshot.json");
-    expect(jsonDoc).toMatchObject(SnapShot);
+    expect(jsonDoc.wordObjects.length).toBeGreaterThanOrEqual(1);
   });
-
-  //TO Check!!!
   test("generate paragraph content control - tree query", async () => {
     let dgContent = new DGContentControls(
-      "http://org-azdo/tfs/TestCollection/",
-      "m5ootoppncbhyfps5qgi5kn7wvtssjprwzc7onk5hsyrohz2lh4q",
-      "doc-gen-test",
+      orgUrl,
+      token,
+      "tests",
       "json",
-      "c:\\assaf\\SRS.dotx"
+      "path:\\assaf"
     );
     await dgContent.init();
-    await dgContent.addQueryBasedContent(
-      "46a16d2a-1a2f-4fe3-8c9d-d600ffa9c68b",
+    let jsonDoc = await dgContent.addQueryBasedContent(
+      "253a04bf-7dbe-4d48-ae0e-744ca6428595",
       "system-capabilities",
       "paragraph",
       3
     );
-
-    let jsonDoc = dgContent.getDocument();
-    const SnapShot = require("../../samples/snapshots/queries/tree-query-paragraph-snapshot.json");
-    expect(jsonDoc).toMatchObject(SnapShot);
+    expect(jsonDoc.wordObjects.length).toBeGreaterThanOrEqual(1);
   });
-
   test("generate paragraph & table content control - tree query", async () => {
     let dgContent = new DGContentControls(
-      "http://org-azdo/tfs/TestCollection/",
-      "m5ootoppncbhyfps5qgi5kn7wvtssjprwzc7onk5hsyrohz2lh4q",
-      "doc-gen-test",
+      orgUrl,
+      token,
+      "tests",
       "json",
-      "c:\\assaf\\SRS.dotx"
+      "path:\\assaf"
     );
     await dgContent.init();
-    await dgContent.addQueryBasedContent(
-      "46a16d2a-1a2f-4fe3-8c9d-d600ffa9c68b",
+    let jsonDoc = await dgContent.addQueryBasedContent(
+      "253a04bf-7dbe-4d48-ae0e-744ca6428595",
       "system-capabilities",
       "paragraph",
       3
     );
 
-    await dgContent.addQueryBasedContent(
-      "46a16d2a-1a2f-4fe3-8c9d-d600ffa9c68b",
+    jsonDoc = await dgContent.addQueryBasedContent(
+      "253a04bf-7dbe-4d48-ae0e-744ca6428595",
       "system-capabilities",
       "table",
-      3
+      3,
+      jsonDoc
     );
-    let jsonDoc = dgContent.getDocument();
-    const SnapShot = require("../../samples/snapshots/queries/tree-query-paragraph-and-table-snapshot.json");
-    expect(jsonDoc).toMatchObject(SnapShot);
+    expect(jsonDoc.wordObjects.length).toBeGreaterThanOrEqual(2);
   });
   test("generate 2 content controls - tree query", async () => {
     let dgContent = new DGContentControls(
-      "http://org-azdo/tfs/TestCollection/",
-      "m5ootoppncbhyfps5qgi5kn7wvtssjprwzc7onk5hsyrohz2lh4q",
-      "doc-gen-test",
+      orgUrl,
+      token,
+      "tests",
       "json",
-      "c:\\assaf\\SRS.dotx"
+      "path:\\assaf"
     );
     await dgContent.init();
-    await dgContent.addQueryBasedContent(
-      "46a16d2a-1a2f-4fe3-8c9d-d600ffa9c68b",
+    let contentControl1 = await dgContent.addQueryBasedContent(
+      "253a04bf-7dbe-4d48-ae0e-744ca6428595",
       "system-capabilities",
       "paragraph",
       3
     );
-
-    await dgContent.addQueryBasedContent(
-      "46a16d2a-1a2f-4fe3-8c9d-d600ffa9c68b",
+    let contentControl2 = await dgContent.addQueryBasedContent(
+      "253a04bf-7dbe-4d48-ae0e-744ca6428595",
       "system-capabilities",
       "table",
       3
     );
-    let jsonDoc = dgContent.getDocument();
-    const SnapShot = require("../../samples/snapshots/queries/tree-query-two-content-snapshot.json");
-    expect(jsonDoc).toMatchObject(SnapShot);
-  });
-  test.skip("Generate trace-table content control - query", async () => {
+    expect(contentControl1.wordObjects.length&&contentControl2.wordObjects.length).toBeGreaterThanOrEqual(1);
+  }); //useless test
+  test("Generate trace-table content control - query", async () => { //complicated
     let dgContent = new DGContentControls(
-      "http://org-azdo/tfs/TestCollection/",
-      "m5ootoppncbhyfps5qgi5kn7wvtssjprwzc7onk5hsyrohz2lh4q",
-      "DevOps",
+      orgUrl,
+      token,
+      "tests",
       "json",
-      "C:\\docgen\\documents\\181020205911\\SRS-18-10-2020-03-59.dotx"
+      "path:\\assaf"
     );
     await dgContent.init();
-    await dgContent.addTraceTableContent(
-      null,
-      null,
-      "46a16d2a-1a2f-4fe3-8c9d-d600ffa9c68b",
-      ["System.LinkTypes.Hierarchy-Forward"],
-      "system-capabilities",
-      0
-    );
-    let jsonDoc = dgContent.getDocument();
-    const SnapShot = require("../../samples/snapshots/queries/query-based-trace-table-snapshot.json");
-    expect(jsonDoc).toMatchObject(SnapShot);
+    let jsonDoc = await dgContent.addTraceTableContent(
+      540,                                         // testPlanId: number,
+      undefined,                                   // testSuiteArray: number[],
+      "86fffbc0-f892-46f4-89c5-edb226da6dc1",      // queryId: string,
+      ["System.LinkTypes.Hierarchy-Reverse"],      // linkTypeFilterArray: string[],
+      "system-capabilities",                       // contentControlTitle: string,
+      0                                            // headingLevel?: number
+    );     
+    expect(jsonDoc.wordObjects.length).toBeGreaterThanOrEqual(1);
   });
 });
-describe.skip("Generate json document from test plans - tests", () => {
+describe("Generate json document from test plans - tests", () => {
   test("Generate std content control - complex test plan with attachments", async () => {
     let dgContent = new DGContentControls(
-      "http://org-azdo/tfs/TestCollection/",
-      "m5ootoppncbhyfps5qgi5kn7wvtssjprwzc7onk5hsyrohz2lh4q",
-      "DevOps",
+      orgUrl,
+      token,
+      "tests",
       "json",
-      "C:\\docgen\\documents\\99999999\\STD-13-12-2020-03-40.dotx" //131220204041
+      "path:\\assaf"
     );
     await dgContent.init();
-    await dgContent.addTestDescriptionContent(
-      1828,
-      undefined,
-      "tests-description-content-control",
-      4,
-      true
+    let jsonDoc = await dgContent.addTestDescriptionContent(
+      540,                                      
+      undefined,                                
+      "tests-description-content-control",      
+      4,                                        
+      true      
     );
-    let jsonDoc = dgContent.getDocument();
-    expect(jsonDoc.contentControls[0].wordObjects.length).toBeGreaterThan(10);
+    expect(jsonDoc.wordObjects.length).toBeGreaterThanOrEqual(1);  
   });
   test("Generate std content control - complex test plan no attachments", async () => {
     let dgContent = new DGContentControls(
-      "http://org-azdo/tfs/TestCollection/",
-      "m5ootoppncbhyfps5qgi5kn7wvtssjprwzc7onk5hsyrohz2lh4q",
-      "DevOps",
+      orgUrl,
+      token,
+      "tests",
       "json",
-      "C:\\docgen\\documents\\99999999\\STD-13-12-2020-03-40.dotx" //
+      "path:\\assaf"
     );
     await dgContent.init();
-    await dgContent.addTestDescriptionContent(
-      1828,
-      undefined,
+    let jsonDoc = await dgContent.addTestDescriptionContent(
+      540,                                      
+      undefined,                                
       "tests-description-content-control",
-      4,
-      false
+      4,                                        
+      false                                     
     );
-    let jsonDoc = dgContent.getDocument();
-    expect(jsonDoc.contentControls[0].wordObjects.length).toBeGreaterThan(10);
+    expect(jsonDoc.wordObjects.length).toBeGreaterThanOrEqual(1);  
   });
-  test.skip("Generate std content control - 1400 testcases complex test plan", async () => {
+  test.skip("Generate std content control - 1400 testcases complex test plan", async () => { //not enough testcases
     let dgContent = new DGContentControls(
-      "http://org-azdo/tfs/org/",
-      "6pxdmymhuk4a67cbp6phuhwh6kczps5rhmacb23i33sib333ln2a",
-      "Tactical-C4I",
+      orgUrl,
+      token,
+      "tests",
       "json",
-      "C:\\docgen\\documents\\181020205911\\SRS-18-10-2020-03-59.dotx"
+      "path:\\assaf"
     );
     await dgContent.init();
     await dgContent.addTestDescriptionContent(
@@ -227,46 +206,43 @@ describe.skip("Generate json document from test plans - tests", () => {
   });
   test("Generate trace-table content control - complex test plan", async () => {
     let dgContent = new DGContentControls(
-      "http://org-azdo/tfs/TestCollection/",
-      "m5ootoppncbhyfps5qgi5kn7wvtssjprwzc7onk5hsyrohz2lh4q",
-      "DevOps",
+      orgUrl,
+      token,
+      "tests",
       "json",
-      "C:\\docgen\\documents\\181020205911\\SRS-18-10-2020-03-59.dotx"
+      "path:\\assaf"
     );
     await dgContent.init();
-    await dgContent.addTraceTableContent(
-      1828,
-      null,
-      null,
+    let jsonDoc = await dgContent.addTraceTableContent(
+      540,
+      [541],
+      "86fffbc0-f892-46f4-89c5-edb226da6dc1",
       ["Microsoft.VSTS.Common.TestedBy-Reverse"],
       "system-capabilities",
-      0
+      0                   
     );
-    let jsonDoc = dgContent.getDocument();
-    const SnapShot = require("../../samples/snapshots/tests/test-plan-trace-table-snapshot.json");
-    expect(jsonDoc).toMatchObject(SnapShot);
+    expect(jsonDoc.wordObjects.length).toBeGreaterThanOrEqual(1);
   });
-  test.skip("Generate str content control - test-group-summary", async () => {
+  test("Generate str content control - test-group-summary", async () => {
     let dgContent = new DGContentControls(
-      "http://org-azdo/tfs/TestCollection/",
-      "m5ootoppncbhyfps5qgi5kn7wvtssjprwzc7onk5hsyrohz2lh4q",
-      "DevOps",
+      orgUrl,
+      token,
+      "tests",
       "json",
-      "C:\\test\\test.dotx"
+      "path:\\assaf"
     );
     await dgContent.init();
-    await dgContent.addTestResultTestGroupSummaryTable(
-      1828,
-      undefined,
-      "system-capabilities",
-      4,
-      false
+    let jsonDoc = await dgContent.addTestResultTestGroupSummaryTable(
+      540,                  //testPlanId: number,
+      undefined,             //testSuiteArray: number[],
+      "system-capabilities", //contentControlTitle: string,
+      4,                     //headingLevel?: number,
+      false                  //includeAttachments: boolean = true
     );
-    let jsonDoc = dgContent.getDocument();
-    expect(jsonDoc.contentControls[0].wordObjects[0].type).toBe("table");
+    expect(jsonDoc.wordObjects.length).toBeGreaterThanOrEqual(1);
   });
 });
-describe("Generate json document from git Changeset", () => { //done
+describe("Generate json document from git Changeset", () => { 
   test("Generate changeset table from commit sha ranges", async () => {
     let dgContent = new DGContentControls(
       orgUrl,
@@ -284,8 +260,10 @@ describe("Generate json document from git Changeset", () => { //done
       "commitSha",
       null,
       "change-description-content-control",
-      4
+      4,
+      undefined
     );
+
     expect(jsonDoc.wordObjects.length).toBeGreaterThan(0);
   });
   test("Generate changeset table from date range", async () => {
@@ -388,8 +366,8 @@ describe.skip("DownloadManger Tests", () => {
     expect(downloadManager.destPath).toBe("291020205230");
   });
 });
-describe.skip("Json data adapters Tests", () => {
-  test.skip("Generate str content control - test-group-summary", async () => {
+describe("Json data adapters Tests", () => {
+  test("Generate str content control - test-group-summary", async () => {
     let rawData = require("../../samples/data/testDataRawWithOutcome.json");
     let testResultGroupSummaryDataSkinAdapter =
       new TestResultGroupSummaryDataSkinAdapter();
