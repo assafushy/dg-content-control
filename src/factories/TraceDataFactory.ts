@@ -42,7 +42,7 @@ export default class TraceDataFactory {
     this.testSuiteArray = testSuiteArray;
     this.queryId = queryId;
     this.linkTypeFilterArray = linkTypeFilterArray;
-    if (testSuiteArray !== null) {
+    if (testSuiteArray) {
       this.isSuiteSpecific = true;
     }
   }
@@ -80,7 +80,7 @@ export default class TraceDataFactory {
     }
     try {
       let ticketsDataProvider = await this.dgDataProvider.getTicketsDataProvider()
-      traceData = ticketsDataProvider.GetLinksByIds(this.teamProject, ids);
+      traceData = await ticketsDataProvider.GetLinksByIds(this.teamProject, ids);
       logger.debug(`fetched trace data for ${ids.length} work items`);
     } catch (e) {
       logger.error(`error fetching trcae data`);

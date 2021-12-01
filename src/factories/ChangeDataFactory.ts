@@ -61,12 +61,17 @@ export default class ChangeDataFactory {
     }
     switch (this.rangeType) {
       case "commitSha":
+      let commitsInCommitRange = await gitDataProvider.GetCommitsInCommitRange(
+          this.teamProject,
+          this.repoId,
+          String(this.to),
+          String(this.from)
+        );
         artifactChanges = await gitDataProvider.GetItemsInCommitRange(
           this.teamProject,
           this.repoId,
-          String(this.from),
-          String(this.to)
-        );
+          commitsInCommitRange
+        )
         this.rawChangesArray.push({
           artifact: focusedArtifact,
           changes: artifactChanges,
@@ -82,8 +87,7 @@ export default class ChangeDataFactory {
         artifactChanges = await gitDataProvider.GetItemsInCommitRange(
           this.teamProject,
           this.repoId,
-          commitsInDateRange.value[commitsInDateRange.count - 1].commitId,
-          commitsInDateRange.value[0].commitId
+          commitsInDateRange
         );
         this.rawChangesArray.push({
           artifact: focusedArtifact,
