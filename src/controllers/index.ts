@@ -66,11 +66,10 @@ export default class DgContentControls {
 
   async generateContentControl(contentControlOptions) {
     try {
-      this.skins = new Skins(this.outputType, this.templatePath);
       switch (contentControlOptions.type) {
         case "query":
           await this.addQueryBasedContent(
-            contentControlOptions.queryId,
+            contentControlOptions.data.queryId,
             contentControlOptions.title,
             contentControlOptions.skinType,
             contentControlOptions.headingLevel
@@ -78,39 +77,39 @@ export default class DgContentControls {
           break;
         case "test-description":
           await this.addTestDescriptionContent(
-            contentControlOptions.testPlanId,
-            contentControlOptions.testSuiteArray,
+            contentControlOptions.data.testPlanId,
+            contentControlOptions.data.testSuiteArray,
             contentControlOptions.title,
             contentControlOptions.headingLevel,
-            contentControlOptions.includeAttachments
+            contentControlOptions.data.includeAttachments
           );
           break;
         case "trace-table":
           await this.addTraceTableContent(
-            contentControlOptions.testPlanId,
-            contentControlOptions.testSuiteArray,
-            contentControlOptions.queryId,
-            contentControlOptions.linkTypeFilterArray,
+            contentControlOptions.data.testPlanId,
+            contentControlOptions.data.testSuiteArray,
+            contentControlOptions.data.queryId,
+            contentControlOptions.data.linkTypeFilterArray,
             contentControlOptions.title,
             contentControlOptions.headingLevel
           );
           break;
         case "test-result-test-group-summary-table":
           await this.addTestResultTestGroupSummaryTable(
-            contentControlOptions.testPlanId,
-            contentControlOptions.testSuiteArray,
+            contentControlOptions.data.testPlanId,
+            contentControlOptions.data.testSuiteArray,
             contentControlOptions.title,
             contentControlOptions.headingLevel,
-            contentControlOptions.includeAttachments
+            contentControlOptions.data.includeAttachments
           );
           break;
         case "change-description-table":
           return this.addChangeDescriptionTable(
-            contentControlOptions.repoId,
-            contentControlOptions.from,
-            contentControlOptions.to,
-            contentControlOptions.rangeType,
-            contentControlOptions.linkTypeFilterArray,
+            contentControlOptions.data.repoId,
+            contentControlOptions.data.from,
+            contentControlOptions.data.to,
+            contentControlOptions.data.rangeType,
+            contentControlOptions.data.linkTypeFilterArray,
             contentControlOptions.title,
             contentControlOptions.headingLevel
           );
@@ -174,7 +173,7 @@ export default class DgContentControls {
         styles,
         headingLevel
       );
-      contentControl.wordObjects.push(skin);
+      contentControl.wordObjects.push(skin[0]);
       return contentControl;
 
     } catch (error) {
@@ -229,7 +228,7 @@ export default class DgContentControls {
         headingLevel,
         includeAttachments
       );
-      contentControl.wordObjects.push(skin);
+      contentControl.wordObjects.push(skin[0]);
       return contentControl;
     } catch (error) {
       logger.error(`Error adding content contorl:`);
@@ -283,7 +282,7 @@ export default class DgContentControls {
         styles,
         headingLevel
       );
-      contentControl.wordObjects.push(skin);
+      contentControl.wordObjects.push(skin[0]);
       return contentControl
     } catch (error) {
       logger.error(`Error adding content contorl:`);
@@ -335,7 +334,7 @@ export default class DgContentControls {
         styles,
         headingLevel
       );
-      contentControl.wordObjects.push(skin);
+      contentControl.wordObjects.push(skin[0]);
       return contentControl
     } catch (error) {
       logger.error(`Error adding content contorl:`);
@@ -380,7 +379,7 @@ export default class DgContentControls {
     }
     try {
       if (!contentControl){
-        contentControl = { title: contentControlTitle, wordObjects: [] };
+      contentControl = { title: contentControlTitle, wordObjects: [] };
       }
       logger.debug(JSON.stringify(contentControlTitle));
       logger.debug(JSON.stringify(this.skins.SKIN_TYPE_TABLE));
@@ -403,11 +402,10 @@ export default class DgContentControls {
           styles,
           headingLevel
         );
-        contentControl.wordObjects.push(paragraphSkin);
-        contentControl.wordObjects.push(tableSkin);
+        contentControl.wordObjects.push(paragraphSkin[0]);
+        contentControl.wordObjects.push(tableSkin[0]);
+        return contentControl;
       }
-
-      return contentControl;
     } catch (error) {
       logger.error(`Error adding content contorl:`);
       console.log(error.data);

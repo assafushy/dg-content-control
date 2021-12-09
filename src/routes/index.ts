@@ -38,7 +38,7 @@ export class Routes {
           await dgContentControls.init();
           let resJson: any = await dgContentControls.generateContentControl(
             body.contentControlOptions
-          );
+            );
           res.status(StatusCodes.OK).json(resJson);
         } catch (error) {
           res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(error);
