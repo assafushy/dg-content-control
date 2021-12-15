@@ -68,7 +68,7 @@ export default class DgContentControls {
     try {
       switch (contentControlOptions.type) {
         case "query":
-          return this.addQueryBasedContent(
+          return await this.addQueryBasedContent(
             contentControlOptions.data.queryId,
             contentControlOptions.title,
             contentControlOptions.data.skinType,
@@ -76,7 +76,7 @@ export default class DgContentControls {
           );
           break;
         case "test-description":
-          return this.addTestDescriptionContent(
+          return await this.addTestDescriptionContent(
             contentControlOptions.data.testPlanId,
             contentControlOptions.data.testSuiteArray,
             contentControlOptions.title,
@@ -85,7 +85,7 @@ export default class DgContentControls {
           );
           break;
         case "trace-table":
-          return this.addTraceTableContent(
+          return await this.addTraceTableContent(
             contentControlOptions.data.testPlanId,
             contentControlOptions.data.testSuiteArray,
             contentControlOptions.data.queryId,
@@ -95,7 +95,7 @@ export default class DgContentControls {
           );
           break;
         case "test-result-test-group-summary-table":
-          return this.addTestResultTestGroupSummaryTable(
+          return await this.addTestResultTestGroupSummaryTable(
             contentControlOptions.data.testPlanId,
             contentControlOptions.data.testSuiteArray,
             contentControlOptions.title,
@@ -104,7 +104,7 @@ export default class DgContentControls {
           );
           break;
         case "change-description-table":
-          return this.addChangeDescriptionTable(
+          return await this.addChangeDescriptionTable(
             contentControlOptions.data.repoId,
             contentControlOptions.data.from,
             contentControlOptions.data.to,
@@ -208,8 +208,6 @@ export default class DgContentControls {
         this.templatePath
       );
       await testDataFactory.fetchTestData();
-      // await testDataFactory.jsonSkinDataAdpater();
-      // adoptedChangesData = changeDataFactory.getAdoptedData();
     } catch (error) {
       logger.error(`Error initilizing test data factory`);
       console.log(error);
