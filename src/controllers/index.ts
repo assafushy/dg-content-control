@@ -66,9 +66,10 @@ export default class DgContentControls {
 
   async generateContentControl(contentControlOptions) {
     try {
+      let contentControlData
       switch (contentControlOptions.type) {
         case "query":
-          return await this.addQueryBasedContent(
+          contentControlData =  await this.addQueryBasedContent(
             contentControlOptions.data.queryId,
             contentControlOptions.title,
             contentControlOptions.data.skinType,
@@ -76,7 +77,7 @@ export default class DgContentControls {
           );
           break;
         case "test-description":
-          return await this.addTestDescriptionContent(
+          contentControlData = await this.addTestDescriptionContent(
             contentControlOptions.data.testPlanId,
             contentControlOptions.data.testSuiteArray,
             contentControlOptions.title,
@@ -85,7 +86,7 @@ export default class DgContentControls {
           );
           break;
         case "trace-table":
-          return await this.addTraceTableContent(
+          contentControlData = await this.addTraceTableContent(
             contentControlOptions.data.testPlanId,
             contentControlOptions.data.testSuiteArray,
             contentControlOptions.data.queryId,
@@ -95,7 +96,7 @@ export default class DgContentControls {
           );
           break;
         case "test-result-test-group-summary-table":
-          return await this.addTestResultTestGroupSummaryTable(
+          contentControlData = await this.addTestResultTestGroupSummaryTable(
             contentControlOptions.data.testPlanId,
             contentControlOptions.data.testSuiteArray,
             contentControlOptions.title,
@@ -104,7 +105,7 @@ export default class DgContentControls {
           );
           break;
         case "change-description-table":
-          return await this.addChangeDescriptionTable(
+          contentControlData = await this.addChangeDescriptionTable(
             contentControlOptions.data.repoId,
             contentControlOptions.data.from,
             contentControlOptions.data.to,
@@ -114,6 +115,7 @@ export default class DgContentControls {
             contentControlOptions.headingLevel
           );
       }
+      return contentControlData;
     } catch (error) {
       logger.error(`Error initlizing Skins:
       ${JSON.stringify(error)} `);
