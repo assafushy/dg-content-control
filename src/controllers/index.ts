@@ -66,17 +66,18 @@ export default class DgContentControls {
 
   async generateContentControl(contentControlOptions) {
     try {
+      let contentControlData
       switch (contentControlOptions.type) {
         case "query":
-          await this.addQueryBasedContent(
+          contentControlData =  await this.addQueryBasedContent(
             contentControlOptions.data.queryId,
             contentControlOptions.title,
-            contentControlOptions.skinType,
+            contentControlOptions.data.skinType,
             contentControlOptions.headingLevel
           );
           break;
         case "test-description":
-          await this.addTestDescriptionContent(
+          contentControlData = await this.addTestDescriptionContent(
             contentControlOptions.data.testPlanId,
             contentControlOptions.data.testSuiteArray,
             contentControlOptions.title,
@@ -85,7 +86,7 @@ export default class DgContentControls {
           );
           break;
         case "trace-table":
-          await this.addTraceTableContent(
+          contentControlData = await this.addTraceTableContent(
             contentControlOptions.data.testPlanId,
             contentControlOptions.data.testSuiteArray,
             contentControlOptions.data.queryId,
@@ -95,7 +96,7 @@ export default class DgContentControls {
           );
           break;
         case "test-result-test-group-summary-table":
-          await this.addTestResultTestGroupSummaryTable(
+          contentControlData = await this.addTestResultTestGroupSummaryTable(
             contentControlOptions.data.testPlanId,
             contentControlOptions.data.testSuiteArray,
             contentControlOptions.title,
@@ -104,7 +105,7 @@ export default class DgContentControls {
           );
           break;
         case "change-description-table":
-          return this.addChangeDescriptionTable(
+          contentControlData = await this.addChangeDescriptionTable(
             contentControlOptions.data.repoId,
             contentControlOptions.data.from,
             contentControlOptions.data.to,
@@ -114,6 +115,7 @@ export default class DgContentControls {
             contentControlOptions.headingLevel
           );
       }
+      return contentControlData;
     } catch (error) {
       logger.error(`Error initlizing Skins:
       ${JSON.stringify(error)} `);
@@ -166,14 +168,16 @@ export default class DgContentControls {
       logger.debug(JSON.stringify(skinType));
       logger.debug(JSON.stringify(styles));
       logger.debug(JSON.stringify(headingLevel));
-      let skin =  await this.skins.addNewContentToDocumentSkin(
+      let skins =  await this.skins.addNewContentToDocumentSkin(
         contentControlTitle,
         skinType,
         res,
         styles,
         headingLevel
       );
-      contentControl.wordObjects.push(skin[0]);
+      skins.forEach(skin => {
+      contentControl.wordObjects.push(skin);
+      });
       return contentControl;
 
     } catch (error) {
@@ -206,8 +210,6 @@ export default class DgContentControls {
         this.templatePath
       );
       await testDataFactory.fetchTestData();
-      // await changeDataFactory.jsonSkinDataAdpater();
-      // adoptedChangesData = changeDataFactory.getAdoptedData();
     } catch (error) {
       logger.error(`Error initilizing test data factory`);
       console.log(error);
@@ -220,7 +222,7 @@ export default class DgContentControls {
       logger.debug(JSON.stringify(this.skins.SKIN_TYPE_TEST_PLAN));
       logger.debug(JSON.stringify(styles));
       logger.debug(JSON.stringify(headingLevel));
-      let skin = await this.skins.addNewContentToDocumentSkin(
+      let skins = await this.skins.addNewContentToDocumentSkin(
         contentControlTitle,
         this.skins.SKIN_TYPE_TEST_PLAN,
         testDataFactory.adoptedTestData,
@@ -228,7 +230,9 @@ export default class DgContentControls {
         headingLevel,
         includeAttachments
       );
-      contentControl.wordObjects.push(skin[0]);
+      skins.forEach(skin => {
+        contentControl.wordObjects.push(skin);
+        });
       return contentControl;
     } catch (error) {
       logger.error(`Error adding content contorl:`);
@@ -275,14 +279,16 @@ export default class DgContentControls {
       logger.debug(JSON.stringify(this.skins.SKIN_TYPE_TEST_PLAN));
       logger.debug(JSON.stringify(styles));
       logger.debug(JSON.stringify(headingLevel));
-      let skin = await this.skins.addNewContentToDocumentSkin(
+      let skins = await this.skins.addNewContentToDocumentSkin(
         contentControlTitle,
         this.skins.SKIN_TYPE_TABLE,
         traceFactory.adoptedData,
         styles,
         headingLevel
       );
-      contentControl.wordObjects.push(skin[0]);
+      skins.forEach(skin => {
+        contentControl.wordObjects.push(skin);
+        });
       return contentControl
     } catch (error) {
       logger.error(`Error adding content contorl:`);
@@ -327,14 +333,16 @@ export default class DgContentControls {
       logger.debug(JSON.stringify(styles));
       logger.debug(JSON.stringify(headingLevel));
       let adoptedData = await testDataFactory.getAdoptedTestData();
-      let skin = await this.skins.addNewContentToDocumentSkin(
+      let skins = await this.skins.addNewContentToDocumentSkin(
         contentControlTitle,
         this.skins.SKIN_TYPE_TEST_PLAN,
         adoptedData,
         styles,
         headingLevel
       );
-      contentControl.wordObjects.push(skin[0]);
+      skins.forEach(skin => {
+        contentControl.wordObjects.push(skin);
+        });
       return contentControl
     } catch (error) {
       logger.error(`Error adding content contorl:`);
@@ -387,7 +395,7 @@ export default class DgContentControls {
       logger.debug(JSON.stringify(headingLevel));
 
       for (const artifactChangesData of adoptedChangesData) {
-        let paragraphSkin = await this.skins.addNewContentToDocumentSkin(
+        let paragraphSkins = await this.skins.addNewContentToDocumentSkin(
           contentControlTitle,
           this.skins.SKIN_TYPE_PARAGRAPH,
           artifactChangesData.artifact,
@@ -395,15 +403,19 @@ export default class DgContentControls {
           headingLevel
         );
 
-        let tableSkin = await this.skins.addNewContentToDocumentSkin(
+        let tableSkins = await this.skins.addNewContentToDocumentSkin(
           contentControlTitle,
           this.skins.SKIN_TYPE_TABLE,
           artifactChangesData.artifactChanges,
           styles,
           headingLevel
         );
-        contentControl.wordObjects.push(paragraphSkin[0]);
-        contentControl.wordObjects.push(tableSkin[0]);
+        paragraphSkins.forEach(skin => {
+          contentControl.wordObjects.push(skin);
+          });
+          tableSkins.forEach(skin => {
+          contentControl.wordObjects.push(skin);
+          });
         return contentControl;
       }
     } catch (error) {
