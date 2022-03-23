@@ -30,13 +30,23 @@ export default class DgContentControls {
   templatePath;
   dgDataProviderAzureDevOps: DgDataProviderAzureDevOps;
   skins: Skins;
+  minioEndPoint: string;
+  minioAccessKey: string;
+  minioSecretKey: string;
+  minioAttachmentData: any[];
+  attachmentsBucketName:string;
 
-  constructor(uri, PAT, teamProjectName, outputType, templatePath) {
+  constructor(uri, PAT, attachmentsBucketName, teamProjectName, outputType, templatePath, minioEndPoint, minioAccessKey, minioSecretKey) {
     this.uri = uri;
     this.PAT = PAT;
+    this.attachmentsBucketName = attachmentsBucketName;
     this.teamProjectName = teamProjectName;
     this.outputType = outputType;
     this.templatePath = templatePath;
+    this.minioEndPoint = minioEndPoint;
+    this.minioAccessKey = minioAccessKey;
+    this.minioSecretKey = minioSecretKey;
+    this.minioAttachmentData = [];
   }
 
   async init() {
@@ -153,9 +163,17 @@ export default class DgContentControls {
         ) {
           let richTextFactory = new RichTextDataFactory(
             field.value || "No description",
-            this.templatePath
+            this.templatePath,
+            this.teamProjectName
           );
-          await richTextFactory.createRichTextContent();
+          await richTextFactory.createRichTextContent(
+            this.attachmentsBucketName,
+            this.minioEndPoint,
+            this.minioAccessKey,
+            this.minioSecretKey,
+            this.PAT
+            );
+          this.minioAttachmentData = this.minioAttachmentData.concat(richTextFactory.attachmentMinioData)
           res[i].fields[t].richText = richTextFactory.skinDataContentControls;
         }
       });
@@ -201,14 +219,19 @@ export default class DgContentControls {
     let testDataFactory: TestDataFactory;
     try {
       testDataFactory = new TestDataFactory(
+        this.attachmentsBucketName,
         this.teamProjectName,
         testPlanId,
         testSuiteArray,
         includeAttachments,
         false,
         this.dgDataProviderAzureDevOps,
-        this.templatePath
-      );
+        this.templatePath,
+        this.minioEndPoint,
+        this.minioAccessKey,
+        this.minioSecretKey,
+        this.PAT,
+      )
       await testDataFactory.fetchTestData();
     } catch (error) {
       logger.error(`Error initilizing test data factory`);
@@ -222,6 +245,8 @@ export default class DgContentControls {
       logger.debug(JSON.stringify(this.skins.SKIN_TYPE_TEST_PLAN));
       logger.debug(JSON.stringify(styles));
       logger.debug(JSON.stringify(headingLevel));
+      let attachmentData = await testDataFactory.getAttachmentMinioData();
+      this.minioAttachmentData = this.minioAttachmentData.concat(attachmentData)
       let skins = await this.skins.addNewContentToDocumentSkin(
         contentControlTitle,
         this.skins.SKIN_TYPE_TEST_PLAN,
@@ -311,13 +336,18 @@ export default class DgContentControls {
       teamProjectName:${this.teamProjectName}`);
     try {
       testDataFactory = new TestDataFactory(
+        this.attachmentsBucketName,
         this.teamProjectName,
         testPlanId,
         testSuiteArray,
         includeAttachments,
         true,
         this.dgDataProviderAzureDevOps,
-        this.templatePath
+        this.templatePath,
+        this.minioEndPoint,
+        this.minioAccessKey,
+        this.minioSecretKey,
+        this.PAT
       );
       await testDataFactory.fetchTestData();
     } catch (error) {
@@ -343,6 +373,8 @@ export default class DgContentControls {
       skins.forEach(skin => {
         contentControl.wordObjects.push(skin);
         });
+        let attachmentData = await testDataFactory.getAttachmentMinioData();
+        this.minioAttachmentData = this.minioAttachmentData.concat(attachmentData)
       return contentControl
     } catch (error) {
       logger.error(`Error adding content contorl:`);

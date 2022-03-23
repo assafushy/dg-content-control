@@ -20,7 +20,7 @@ export default class AttachmentsDataFactory {
     this.dgDataProviderAzureDevOps = dgDataProvider;
   }
 
-  async fetchWiAttachments() {
+  async fetchWiAttachments(attachmentsBucketName,minioEndPoint, minioAccessKey, minioSecretKey, PAT) {
     let attachments;
     try {
         let ticketsDataProvider =  await this.dgDataProviderAzureDevOps.getTicketsDataProvider();
@@ -37,8 +37,6 @@ export default class AttachmentsDataFactory {
     try {
       let attachmentData = [];
       for (let i = 0; i < attachments.length; i++) {
-        let relativeAttachmentLink = "";
-        let tableCellAttachmentLink = "";
         let attachmentFileName = attachments[i].downloadUrl.substring(
           attachments[i].downloadUrl.lastIndexOf("/") + 1,
           attachments[i].downloadUrl.length
@@ -47,28 +45,24 @@ export default class AttachmentsDataFactory {
           0,
           attachments[i].downloadUrl.lastIndexOf("/")
         );
-        let downloadedAttachmentPath = await this.downloadAttachment(
+        let downloadedAttachmentData = await this.downloadAttachment(
+          attachmentsBucketName,
           attachmentUrl,
-          attachmentFileName
+          attachmentFileName,
+          minioEndPoint,
+          minioAccessKey,
+          minioSecretKey,
+          PAT
         );
-        if (downloadedAttachmentPath) {
-          relativeAttachmentLink =
-            "file:///" +
-            downloadedAttachmentPath.substring(
-              downloadedAttachmentPath.indexOf("downloads"),
-              downloadedAttachmentPath.length
-            );
-
-          // .replace(/\\/g, "/");
-          let pathArray = downloadedAttachmentPath.split(".");
-          tableCellAttachmentLink = pathArray[0] + "-TableCell." + pathArray[1];
-        }
+        let downloadedAttachmentPath = `TempFiles/${downloadedAttachmentData.fileName}`
         attachmentData.push({
           attachmentComment: attachments[i].attributes.comment || "",
           attachmentFileName: attachmentFileName,
           attachmentLink: downloadedAttachmentPath,
-          relativeAttachmentLink: relativeAttachmentLink,
-          tableCellAttachmentLink: tableCellAttachmentLink
+          relativeAttachmentLink: downloadedAttachmentPath,
+          tableCellAttachmentLink: downloadedAttachmentPath,
+          attachmentMinioPath: downloadedAttachmentData.attachmentPath,
+          minioFileName: downloadedAttachmentData.fileName
         });
       }
       
@@ -82,14 +76,18 @@ export default class AttachmentsDataFactory {
     }
   }
 
-  async downloadAttachment(attachmentUrl, attachmentFileName) {
+  async downloadAttachment(attachmentsBucketName,attachmentUrl, attachmentFileName, minioEndPoint, minioAccessKey, minioSecretKey, PAT) {
     try {
       let downloadManager = new DownloadManager(
-        this.templatePath,
+        attachmentsBucketName,
+        minioEndPoint,
+        minioAccessKey,
+        minioSecretKey,
         attachmentUrl,
         attachmentFileName,
-        process.env.DOWNLOAD_MANAGER_URL
-      );
+        this.teamProject,
+        PAT
+        );
       let res = await downloadManager.downloadFile();
       return res;
     } catch (e) {

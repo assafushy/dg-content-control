@@ -26,14 +26,26 @@ export default class TestDataFactory {
   templatePath: string;
   includeAttachments: boolean;
   includeTestResults: boolean;
+  minioEndPoint: string;
+  minioAccessKey: string;
+  minioSecretKey: string;
+  attachmentMinioData: any[];
+  PAT: string;
+  attachmentsBucketName: string;
+
   constructor(
+    attachmentsBucketName,
     teamProject: string = "",
     testPlanId: number = null,
     testSuiteArray: number[] = null,
     includeAttachments: boolean = true,
     includeTestResults: boolean = false,
     dgDataProvider: any,
-    templatePath = ""
+    templatePath = "",
+    minioEndPoint,
+    minioAccessKey,
+    minioSecretKey,
+    PAT
   ) {
     this.teamProject = teamProject;
     this.testPlanId = testPlanId;
@@ -45,6 +57,12 @@ export default class TestDataFactory {
     if (testSuiteArray !== null) {
       this.isSuiteSpecific = true;
     }
+    this.attachmentMinioData = [];
+    this.minioEndPoint = minioEndPoint;
+    this.minioAccessKey = minioAccessKey;
+    this.minioSecretKey = minioSecretKey;
+    this.PAT = PAT;
+    this.attachmentsBucketName = attachmentsBucketName
   }
   async fetchTestData() {
     let filteredPlan;
@@ -128,6 +146,13 @@ export default class TestDataFactory {
         let attachmentsData = await this.generateAttachmentData(
           testCases[i].id
         );
+        attachmentsData.forEach(item => {
+          let attachmentBucketData = {
+            attachmentMinioPath: item.attachmentMinioPath,
+            minioFileName: item.minioFileName
+          }
+          this.attachmentMinioData.push(attachmentBucketData);
+        });
         let testCaseWithAttachments: any = JSON.parse(
           JSON.stringify(testCases[i])
         );
@@ -197,7 +222,7 @@ export default class TestDataFactory {
       if (testCaseId == 1839) {
         logger.debug("Stop!!!!");
       }
-      let attachmentsData = await attachmentsfactory.fetchWiAttachments();
+      let attachmentsData = await attachmentsfactory.fetchWiAttachments(this.attachmentsBucketName, this.minioEndPoint, this.minioAccessKey, this.minioSecretKey, this.PAT);
       return attachmentsData;
     } catch (e) {
       logger.error(
@@ -230,9 +255,17 @@ export default class TestDataFactory {
               suite.testCases.map(async testCase => {
                 let richTextFactory = new RichTextDataFactory(
                   testCase.description || "No description",
-                  this.templatePath
+                  this.templatePath,
+                  this.teamProject
                 );
-                await richTextFactory.createRichTextContent();
+                await richTextFactory.createRichTextContent(this.attachmentsBucketName, this.minioEndPoint, this.minioAccessKey, this.minioSecretKey, this.PAT);
+                richTextFactory.attachmentMinioData.forEach(item => {
+                  let attachmentBucketData = {
+                    attachmentMinioPath: item.attachmentPath,
+                    minioFileName: item.fileName
+                  }
+                  this.attachmentMinioData.push(attachmentBucketData);
+                });
                 let richText = richTextFactory.skinDataContentControls;
                 let testCaseHeaderSkinData = {
                   fields: [
@@ -349,5 +382,8 @@ export default class TestDataFactory {
 
   async getAdoptedTestData() {
     return this.adoptedTestData;
+  }
+  async getAttachmentMinioData() {
+    return this.attachmentMinioData;
   }
 }

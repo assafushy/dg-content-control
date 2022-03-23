@@ -12,9 +12,13 @@ export class Routes {
           const dgContentControls = new DgContentControls(
             body.orgUrl,
             body.token,
+            body.attachmentsBucketName,
             body.projectName,
             body.outputType,
-            body.templateUrl
+            body.templateUrl,
+            body.minioEndPoint,
+            body.minioAccessKey,
+            body.minioSecretKey,
           );
           await dgContentControls.init();
           let resJson: any = await dgContentControls.generateDocTemplate();
@@ -29,16 +33,20 @@ export class Routes {
           const dgContentControls = new DgContentControls(
             body.orgUrl,
             body.token,
+            body.attachmentsBucketName,
             body.projectName,
             body.outputType,
-            body.templateUrl
-          );
+            body.templateUrl,
+            body.minioEndPoint,
+            body.minioAccessKey,
+            body.minioSecretKey);
           logger.info(`request recieved with body :
           ${JSON.stringify(body)}`);
           await dgContentControls.init();
           let resJson: any = await dgContentControls.generateContentControl(
             body.contentControlOptions
             );
+            resJson.minioAttachmentData = dgContentControls.minioAttachmentData
           res.status(StatusCodes.OK).json(resJson);
         } catch (error) {
           res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(error);
