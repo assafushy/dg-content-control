@@ -402,7 +402,7 @@ describe.skip("Rich Text Data factory Tests", () => {
       "test=path",
       "tests"
     );
-    richTextFactory.createRichTextContent("minioEndPoint", "minioAccessKey", "minioSecretKey"); //change with actual props
+    richTextFactory.createRichTextContent("tests","minioEndPoint", "minioAccessKey", "minioSecretKey","placeholderPat"); //change with actual props
     let richText = richTextFactory.skinDataContentControls;
     const SnapShot = require("../../samples/snapshots/common/richTextWithimageTableAndParagraph.json");
     expect(richText).toMatchObject(SnapShot);
@@ -415,7 +415,7 @@ describe.skip("Rich Text Data factory Tests", () => {
       "test=path",
       "tests"
     );
-    richTextFactory.createRichTextContent("minioEndPoint", "minioAccessKey", "minioSecretKey"); //change with actual props
+    richTextFactory.createRichTextContent("tests","minioEndPoint", "minioAccessKey", "minioSecretKey","placeholderPat"); //change with actual props
     let richText = richTextFactory.skinDataContentControls;
     const SnapShot = require("../../samples/snapshots/common/richTextParagraphOnly-contentControl.json");
     expect(richText).toMatchObject(SnapShot);
