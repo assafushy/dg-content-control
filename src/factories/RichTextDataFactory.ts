@@ -8,14 +8,17 @@ export default class RichTextDataFactory {
   contentControlsStrings: any[] = [];
   skinDataContentControls: any[] = [];
   templatePath: string = "";
+  teamProject: string = "";
+  attachmentMinioData: any[] = [];
 
-  constructor(richTextString: string, templatePath: string) {
+  constructor(richTextString: string, templatePath: string, teamProject: string) {
     this.richTextString = richTextString;
     this.insideTableFlag = false;
     this.templatePath = templatePath;
+    this.teamProject = teamProject;
   }
-  async createRichTextContent() {
-    await this.htmlStrip();
+  async createRichTextContent(attachmentsBucketName, minioEndPoint, minioAccessKey, minioSecretKey, PAT) {
+    await this.htmlStrip(attachmentsBucketName, minioEndPoint, minioAccessKey, minioSecretKey, PAT);
   }
 
   replaceTags = ({ tag, deleteFrom, deleteTo, rangesArr }) => {
@@ -70,7 +73,7 @@ export default class RichTextDataFactory {
     }
   };
 
-  async htmlStrip() {
+  async htmlStrip(attachmentsBucketName,minioEndPoint, minioAccessKey, minioSecretKey, PAT) {
     this.stripedString = striphtml(this.richTextString, {
       cb: this.replaceTags,
     }).result;
@@ -100,15 +103,22 @@ export default class RichTextDataFactory {
             imageUrl.length
           );
           imageUrl = imageUrl.substring(0, imageUrl.indexOf("?"));
+          
           let downloadManager = new DownloadManager(
-            this.templatePath,
+            attachmentsBucketName,
+            minioEndPoint,
+            minioAccessKey,
+            minioSecretKey,
             imageUrl,
             imageFileName,
-            process.env.DOWNLOAD_MANAGER_URL
-          );
+            this.teamProject,
+            PAT
+            );
+          let attachmentData = await downloadManager.downloadFile();
+          this.attachmentMinioData.push(attachmentData);
           this.skinDataContentControls[
             i
-          ].data = await downloadManager.downloadFile();
+          ].data = `TempFiles/${attachmentData.fileName}`;
         } else {
           return false;
         }

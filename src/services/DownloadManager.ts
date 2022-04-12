@@ -1,54 +1,53 @@
 import logger from "./logger";
 import axios from "axios";
-const fetch = require("node-fetch");
+
 export default class DownloadManager {
-  destPath: string;
+  bucketName: string;
+  minioEndPoint: string;
+  minioAccessKey : string;
+  minioSecretKey : string;
   downloadUrl: string;
-  downloadManagerUrl: string;
-  fileName: string;
+  fileExtension: string;
+  projectName: string;
+  PAT: string;
 
-  constructor(destPath, downloadUrl, fileName, downloadManagerUrl) {
+  constructor(bucketName, minioEndPoint, minioAccessKey,minioSecretKey, downloadUrl, fileName, projectName, PAT) {
+    this.bucketName = bucketName;
+    this.minioEndPoint = minioEndPoint;
+    this.minioAccessKey = minioAccessKey;
+    this.minioSecretKey = minioSecretKey;
     this.downloadUrl = downloadUrl;
-    this.fileName = fileName;
-
-    this.destPath = destPath;
-    if (this.destPath[0] === "C") {
-      this.destPath = this.destPath.replace("C:\\docgen\\documents\\", "");
-      this.destPath = this.destPath.replace("\\", "/");
-    } else {
-      this.destPath = this.destPath.replace("/docgen/documents/", "");
-    }
-    this.destPath = this.destPath.substring(0, this.destPath.indexOf("/", 2));
-    if (downloadManagerUrl === undefined) {
-      this.downloadManagerUrl = "http://host:3003/api/download_manager";
-    } else {
-      this.downloadManagerUrl = downloadManagerUrl;
-    }
+    let fileNameArray = fileName.split(".");
+    this.fileExtension = `.${fileNameArray[fileNameArray.length-1]}`;
+    this.projectName = projectName;
+    this.PAT = PAT;
   }
+  
 
   async downloadFile() {
-    const body = {
-      url: this.downloadUrl,
-      name: this.fileName,
-      location: `${this.destPath}`,
-      imageSize: {
-        height: 250,
-        width: 100,
-      },
-    };
-    logger.info(`Downloading:
-                    ${this.downloadUrl}
-                to:
-                  ${this.destPath}`);
-    try {
-      let res = await axios.post(this.downloadManagerUrl, body);
-      logger.info(`downloaded to :${res.data}`);
-      if (res.status == 200) return res.data;
-      else return null;
-    } catch (e) {
-      logger.error(`error dowloading : ${this.downloadUrl}`);
-    }
+    try{
+      this.minioEndPoint = this.minioEndPoint.replace(/^https?:\/\//, '');
+      let downloadManagerResponse = await axios.post(
+        `${process.env.downloadManagerUrl}/uploadAttachment`,
+        {
+        bucketName : this.bucketName,
+        minioEndPoint : this.minioEndPoint,
+        minioAccessKey : this.minioAccessKey,
+        minioSecretKey : this.minioSecretKey,
+        downloadUrl : this.downloadUrl,
+        fileExtension : this.fileExtension,
+        projectName : this.projectName,
+        token : this.PAT
+      }
+    )
+    logger.info(`downloaded to :${downloadManagerResponse.data}`);
+    if (downloadManagerResponse.status == 200) return downloadManagerResponse.data;
+    else return null;
   }
+  catch (e) {
+    logger.error(`error dowloading : ${this.downloadUrl}`);
+  }
+}
 
   convertToWinodwsPath(linuxPath: string) {
     let windowsPath = linuxPath.split("/").join("\\");
