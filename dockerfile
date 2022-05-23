@@ -1,7 +1,7 @@
 FROM node:slim as build
 WORKDIR /usr/src/app
 COPY . ./
-RUN npm ci
+RUN npm ci --legacy-peer-deps
 RUN npm install typescript -g
 RUN npm run build
 
@@ -10,7 +10,7 @@ RUN npm run build
 FROM  node:slim
 WORKDIR /usr/src/app
 COPY package*.json ./
-RUN npm ci
+RUN npm ci --legacy-peer-deps
 COPY --from=build /usr/src/app/bin /usr/src/app
 EXPOSE 3000
 
