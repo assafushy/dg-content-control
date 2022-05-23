@@ -76,7 +76,7 @@ export default class AttachmentsDataFactory {
             attachmentFileName: attachmentFileName,
             attachmentLink: LocalAttachmentPath,
             relativeAttachmentLink: LocalAttachmentPath,
-            tableCellAttachmentLink: LocalThumbnailPath,
+            tableCellAttachmentLink: LocalAttachmentPath,
             attachmentMinioPath: downloadedAttachmentData.attachmentPath,
             minioFileName: downloadedAttachmentData.fileName
           });
