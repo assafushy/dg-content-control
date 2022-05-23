@@ -10,7 +10,7 @@ RUN npm run build
 FROM  node:slim
 WORKDIR /usr/src/app
 COPY package*.json ./
-RUN npm ci
+RUN npm install
 COPY --from=build /usr/src/app/bin /usr/src/app
 EXPOSE 3000
 
