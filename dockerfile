@@ -1,7 +1,7 @@
 FROM node:slim as build
 WORKDIR /usr/src/app
 COPY . ./
-RUN npm ci
+RUN npm install
 RUN npm install typescript -g
 RUN npm run build
 
