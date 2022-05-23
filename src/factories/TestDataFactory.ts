@@ -152,6 +152,13 @@ export default class TestDataFactory {
             minioFileName: item.minioFileName
           }
           this.attachmentMinioData.push(attachmentBucketData);
+          if (item.ThumbMinioPath && item.minioThumbName) {
+            let thumbBucketData = {
+              attachmentMinioPath: item.ThumbMinioPath,
+              minioFileName: item.minioThumbName
+            }
+            this.attachmentMinioData.push(thumbBucketData);
+          }
         });
         let testCaseWithAttachments: any = JSON.parse(
           JSON.stringify(testCases[i])

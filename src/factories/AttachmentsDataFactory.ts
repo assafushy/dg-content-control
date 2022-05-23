@@ -54,16 +54,34 @@ export default class AttachmentsDataFactory {
           minioSecretKey,
           PAT
         );
-        let downloadedAttachmentPath = `TempFiles/${downloadedAttachmentData.fileName}`
-        attachmentData.push({
-          attachmentComment: attachments[i].attributes.comment || "",
-          attachmentFileName: attachmentFileName,
-          attachmentLink: downloadedAttachmentPath,
-          relativeAttachmentLink: downloadedAttachmentPath,
-          tableCellAttachmentLink: downloadedAttachmentPath,
-          attachmentMinioPath: downloadedAttachmentData.attachmentPath,
-          minioFileName: downloadedAttachmentData.fileName
-        });
+        let LocalThumbnailPath
+        let LocalAttachmentPath = `TempFiles/${downloadedAttachmentData.fileName}`
+        if (downloadedAttachmentData.thumbnailName && downloadedAttachmentData.thumbnailPath){
+          LocalThumbnailPath = `TempFiles/${downloadedAttachmentData.thumbnailName}`
+          attachmentData.push({
+            attachmentComment: attachments[i].attributes.comment || "",
+            attachmentFileName: attachmentFileName,
+            attachmentLink: LocalAttachmentPath,
+            relativeAttachmentLink: LocalAttachmentPath,
+            tableCellAttachmentLink: LocalThumbnailPath,
+            attachmentMinioPath: downloadedAttachmentData.attachmentPath,
+            minioFileName: downloadedAttachmentData.fileName,
+            ThumbMinioPath: downloadedAttachmentData.thumbnailPath,
+            minioThumbName: downloadedAttachmentData.thumbnailName
+          });
+        }
+        else{
+          attachmentData.push({
+            attachmentComment: attachments[i].attributes.comment || "",
+            attachmentFileName: attachmentFileName,
+            attachmentLink: LocalAttachmentPath,
+            relativeAttachmentLink: LocalAttachmentPath,
+            tableCellAttachmentLink: LocalThumbnailPath,
+            attachmentMinioPath: downloadedAttachmentData.attachmentPath,
+            minioFileName: downloadedAttachmentData.fileName
+          });
+        }
+
       }
       
       return attachmentData;
