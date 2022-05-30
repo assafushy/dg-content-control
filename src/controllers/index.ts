@@ -5,9 +5,7 @@ import TraceDataFactory from "../factories/TraceDataFactory";
 import RichTextDataFactory from "../factories/RichTextDataFactory";
 import ChangeDataFactory from "../factories/ChangeDataFactory";
 import logger from "../services/logger";
-import { json } from "express";
 import contentControl from "../models/contentControl";
-import { trace } from "console";
 import * as fs from 'fs';
 import * as Minio from 'minio';
 
@@ -129,15 +127,9 @@ export default class DgContentControls {
             contentControlOptions.headingLevel
           );
       }
-      let i = 0;
-      let data = "1234567890987654321"
-      while (i < 23) {
-        data = data + data;
-        i++;
-      }
-let jsonData = this.uploadToMinio(data)
-
-console.log(jsonData);
+      let jsonLocalData = await this.writeToJson(contentControlData)
+      let jsonData = await this.uploadToMinio(jsonLocalData,this.minioEndPoint,this.jsonFileBucketName)
+      this.deleteFile(jsonLocalData)
       return jsonData;
     } catch (error) {
       logger.error(`Error initlizing Skins:
@@ -471,35 +463,61 @@ console.log(jsonData);
   getDocument() {
     return this.skins.getDocumentSkin();
   }
-  uploadToMinio(contentControlData){
-    try{
-  const timeNow = Date.now();
-  let jsonObj = JSON.stringify(contentControlData);
-  let jsonName = this.teamProjectName+ timeNow.toString()+".json";
-  let jsonPath = `./${this.jsonFileBucketName}/${jsonName}`
-  fs.writeFileSync(jsonPath, jsonObj, 'utf8')
-    const minioClient = new Minio.Client({
-      endPoint: this.minioEndPoint.split(':')[0],
-      port: 9000,
-      useSSL: false,
-      accessKey: this.minioAccessKey,
-      secretKey: this.minioSecretKey
-    });
-    let obj_info =  minioClient.fPutObject(
-      this.jsonFileBucketName, jsonName, jsonPath,function(err, objInfo) {
-        if (err) return logger.error(err)
-        logger.info('File uploaded successfully.')
-        return objInfo;
-      })
-      logger.info(obj_info);
-      return {
-        JsonPath:`http://${this.minioEndPoint}/${this.jsonFileBucketName}/${this.jsonFileBucketName}/${jsonName}`,
+
+  async writeToJson(contentControlData){
+    return new Promise((resolve,reject) => {
+        const timeNow = Date.now();
+        let jsonObj = JSON.stringify(contentControlData);
+        let jsonName = this.teamProjectName+ timeNow.toString()+".json";
+        let localJsonPath = `./${this.jsonFileBucketName}/${jsonName}`
+    fs.writeFile(localJsonPath, jsonObj, function (error) {
+      if (error) {
+        logger.error("issue writing to json due to : " + error)
+        reject("issue writing to json due to: " + error)
+      }      console.log(`${jsonName} file was created`);
+      resolve({
+        localJsonPath,
         jsonName
+      });
+    });
+  });
+}
+  async uploadToMinio(jsonLocalData,minioEndPoint,jsonFileBucketName) {
+    return new Promise((resolve,reject) => {
+      try{
+        const minioClient = new Minio.Client({
+          endPoint: minioEndPoint.split(':')[0],
+          port: 9000,
+          useSSL: false,
+          accessKey: this.minioAccessKey,
+          secretKey: this.minioSecretKey
+        });
+        minioClient.fPutObject(
+          jsonFileBucketName, jsonLocalData.jsonName, jsonLocalData.localJsonPath,function(error) {
+            if (error) {
+              logger.error("issue uploading to minio due to : " + error)
+              reject("issue uploading to minio due to : " + error)
+            }
+            logger.info('File uploaded successfully.')
+            resolve({
+              jsonPath:`http://${minioEndPoint}/${jsonFileBucketName}/${jsonLocalData.jsonName}`,
+              jsonName: jsonLocalData.jsonName
+            })
+          })
+        }
+        catch(error)
+        {
+          logger.error("issue uploading to minio due to : " + error)
+          reject("issue uploading to minio due to : " + error)
+        }
+      });
+    }
+    deleteFile(jsonLocalData){
+      try {
+        fs.unlinkSync(jsonLocalData.localJsonPath);
+        logger.info(`File removed at :${jsonLocalData.localJsonPath}`);
+      } catch (err) {
+        logger.error(err);
       }
     }
-    catch(error)
-    {
-      logger.error("issue uploading to minio due to : " + error)
-    }
-  }
-} //class
+  } //class
