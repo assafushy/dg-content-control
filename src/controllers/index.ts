@@ -8,6 +8,8 @@ import logger from "../services/logger";
 import { json } from "express";
 import contentControl from "../models/contentControl";
 import { trace } from "console";
+import * as fs from 'fs';
+import * as Minio from 'minio';
 
 
 let styles = {
@@ -35,6 +37,7 @@ export default class DgContentControls {
   minioSecretKey: string;
   minioAttachmentData: any[];
   attachmentsBucketName:string;
+  jsonFileBucketName:string;
 
   constructor(uri, PAT, attachmentsBucketName, teamProjectName, outputType, templatePath, minioEndPoint, minioAccessKey, minioSecretKey) {
     this.uri = uri;
@@ -43,10 +46,11 @@ export default class DgContentControls {
     this.teamProjectName = teamProjectName;
     this.outputType = outputType;
     this.templatePath = templatePath;
-    this.minioEndPoint = minioEndPoint;
+    this.minioEndPoint = minioEndPoint.replace(/^https?:\/\//, '');
     this.minioAccessKey = minioAccessKey;
     this.minioSecretKey = minioSecretKey;
     this.minioAttachmentData = [];
+    this.jsonFileBucketName = "content-controls"
   }
 
   async init() {
@@ -125,10 +129,19 @@ export default class DgContentControls {
             contentControlOptions.headingLevel
           );
       }
-      return contentControlData;
+      let i = 0;
+      let data = "1234567890987654321"
+      while (i < 23) {
+        data = data + data;
+        i++;
+      }
+let jsonData = this.uploadToMinio(data)
+
+console.log(jsonData);
+      return jsonData;
     } catch (error) {
       logger.error(`Error initlizing Skins:
-      ${JSON.stringify(error)} `);
+      ${(error)}`);
     }
   }
 
@@ -457,5 +470,36 @@ export default class DgContentControls {
   }
   getDocument() {
     return this.skins.getDocumentSkin();
+  }
+  uploadToMinio(contentControlData){
+    try{
+  const timeNow = Date.now();
+  let jsonObj = JSON.stringify(contentControlData);
+  let jsonName = this.teamProjectName+ timeNow.toString()+".json";
+  let jsonPath = `./${this.jsonFileBucketName}/${jsonName}`
+  fs.writeFileSync(jsonPath, jsonObj, 'utf8')
+    const minioClient = new Minio.Client({
+      endPoint: this.minioEndPoint.split(':')[0],
+      port: 9000,
+      useSSL: false,
+      accessKey: this.minioAccessKey,
+      secretKey: this.minioSecretKey
+    });
+    let obj_info =  minioClient.fPutObject(
+      this.jsonFileBucketName, jsonName, jsonPath,function(err, objInfo) {
+        if (err) return logger.error(err)
+        logger.info('File uploaded successfully.')
+        return objInfo;
+      })
+      logger.info(obj_info);
+      return {
+        JsonPath:`http://${this.minioEndPoint}/${this.jsonFileBucketName}/${this.jsonFileBucketName}/${jsonName}`,
+        jsonName
+      }
+    }
+    catch(error)
+    {
+      logger.error("issue uploading to minio due to : " + error)
+    }
   }
 } //class
