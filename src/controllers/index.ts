@@ -5,9 +5,9 @@ import TraceDataFactory from "../factories/TraceDataFactory";
 import RichTextDataFactory from "../factories/RichTextDataFactory";
 import ChangeDataFactory from "../factories/ChangeDataFactory";
 import logger from "../services/logger";
-import { json } from "express";
 import contentControl from "../models/contentControl";
-import { trace } from "console";
+import * as fs from 'fs';
+import * as Minio from 'minio';
 
 
 let styles = {
@@ -35,6 +35,7 @@ export default class DgContentControls {
   minioSecretKey: string;
   minioAttachmentData: any[];
   attachmentsBucketName:string;
+  jsonFileBucketName:string;
 
   constructor(uri, PAT, attachmentsBucketName, teamProjectName, outputType, templatePath, minioEndPoint, minioAccessKey, minioSecretKey) {
     this.uri = uri;
@@ -43,10 +44,11 @@ export default class DgContentControls {
     this.teamProjectName = teamProjectName;
     this.outputType = outputType;
     this.templatePath = templatePath;
-    this.minioEndPoint = minioEndPoint;
+    this.minioEndPoint = minioEndPoint.replace(/^https?:\/\//, '');
     this.minioAccessKey = minioAccessKey;
     this.minioSecretKey = minioSecretKey;
     this.minioAttachmentData = [];
+    this.jsonFileBucketName = "content-controls"
   }
 
   async init() {
@@ -125,10 +127,13 @@ export default class DgContentControls {
             contentControlOptions.headingLevel
           );
       }
-      return contentControlData;
+      let jsonLocalData = await this.writeToJson(contentControlData)
+      let jsonData = await this.uploadToMinio(jsonLocalData,this.minioEndPoint,this.jsonFileBucketName)
+      this.deleteFile(jsonLocalData)
+      return jsonData;
     } catch (error) {
       logger.error(`Error initlizing Skins:
-      ${JSON.stringify(error)} `);
+      ${(error)}`);
     }
   }
 
@@ -458,4 +463,61 @@ export default class DgContentControls {
   getDocument() {
     return this.skins.getDocumentSkin();
   }
-} //class
+
+  async writeToJson(contentControlData){
+    return new Promise((resolve,reject) => {
+        const timeNow = Date.now();
+        let jsonObj = JSON.stringify(contentControlData);
+        let jsonName = this.teamProjectName+ timeNow.toString()+".json";
+        let localJsonPath = `./${this.jsonFileBucketName}/${jsonName}`
+    fs.writeFile(localJsonPath, jsonObj, function (error) {
+      if (error) {
+        logger.error("issue writing to json due to : " + error)
+        reject("issue writing to json due to: " + error)
+      }      console.log(`${jsonName} file was created`);
+      resolve({
+        localJsonPath,
+        jsonName
+      });
+    });
+  });
+}
+  async uploadToMinio(jsonLocalData,minioEndPoint,jsonFileBucketName) {
+    return new Promise((resolve,reject) => {
+      try{
+        const minioClient = new Minio.Client({
+          endPoint: minioEndPoint.split(':')[0],
+          port: 9000,
+          useSSL: false,
+          accessKey: this.minioAccessKey,
+          secretKey: this.minioSecretKey
+        });
+        minioClient.fPutObject(
+          jsonFileBucketName, jsonLocalData.jsonName, jsonLocalData.localJsonPath,function(error) {
+            if (error) {
+              logger.error("issue uploading to minio due to : " + error)
+              reject("issue uploading to minio due to : " + error)
+            }
+            logger.info('File uploaded successfully.')
+            resolve({
+              jsonPath:`http://${minioEndPoint}/${jsonFileBucketName}/${jsonLocalData.jsonName}`,
+              jsonName: jsonLocalData.jsonName
+            })
+          })
+        }
+        catch(error)
+        {
+          logger.error("issue uploading to minio due to : " + error)
+          reject("issue uploading to minio due to : " + error)
+        }
+      });
+    }
+    deleteFile(jsonLocalData){
+      try {
+        fs.unlinkSync(jsonLocalData.localJsonPath);
+        logger.info(`File removed at :${jsonLocalData.localJsonPath}`);
+      } catch (err) {
+        logger.error(err);
+      }
+    }
+  } //class
