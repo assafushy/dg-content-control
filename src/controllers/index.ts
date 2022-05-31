@@ -470,8 +470,8 @@ export default class DgContentControls {
         let jsonObj = JSON.stringify(contentControlData);
         let jsonName = this.teamProjectName+ timeNow.toString()+".json";
         let localJsonPath = `./${this.jsonFileBucketName}/${jsonName}`
-        if (!fs.existsSync(localJsonPath)){
-          fs.mkdirSync(localJsonPath);
+        if (!fs.existsSync(`./${this.jsonFileBucketName}`)){
+          fs.mkdirSync(`./${this.jsonFileBucketName}`);
       }
     fs.writeFile(localJsonPath, jsonObj, function (error) {
       if (error) {
