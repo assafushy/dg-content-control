@@ -39,8 +39,9 @@ export default class ChangesTableDataSkinAdapter {
               url: null,
             },
             {
-              name: "Related WI",
-              value: change.workItem.fields["System.WorkItemType"],
+              name: "Related WI", 
+              value: `${change.workItem.fields["System.Title"]} - ${change.workItem.fields["System.WorkItemType"]} ${change.workItem.id}`,
+              url: change.workItem._links.html.href
             },
             {
               name: "Change description",
@@ -78,12 +79,12 @@ export default class ChangesTableDataSkinAdapter {
         }
         if (change.commit) {
           //Change#
-          changeTableRow.fields[1].value = change.commit.commitId;
-          changeTableRow.fields[1].url = change.commit.url;
+          changeTableRow.fields[1].value = change.commit.commitId.substring(0, 5);
+          changeTableRow.fields[1].url = change.commit.remoteUrl;
           //Commited time
           changeTableRow.fields[4].value = change.commit.author.date;
           //commited by
-          changeTableRow.fields[5].value = change.commit.author.email;
+          changeTableRow.fields[5].value = change.commit.author.name;
         }
         artifactChanges.push(changeTableRow);
 
