@@ -84,10 +84,9 @@ export default class ChangesTableDataSkinAdapter {
           //Commited time
           changeTableRow.fields[4].value = change.commit.author.date;
           //commited by
-          changeTableRow.fields[5].value = change.commit.author.name;
+          changeTableRow.fields[5].value = change.commit.committer.name;
         }
         artifactChanges.push(changeTableRow);
-
         i++;
       });
       this.adoptedData.push({
