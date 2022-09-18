@@ -372,13 +372,13 @@ describe("Generate json document from git Changeset", () => {
     let dgContent = new DGContentControls(
       orgUrl,
       token,
+      "attachments",
       "tests",
       "json",
       "path:\\assaf",
       "http://s3:9000",
       "your-root-user",
-      "your-root-password",
-      "placeholderPat"
+      "your-root-password"
     );
 
     await dgContent.init();
@@ -411,8 +411,8 @@ describe("Generate json document from git Changeset", () => {
     let jsonDoc = await dgContent.addPullRequestDescriptionTable(
       "68f2aee7-0864-458e-93ce-320303a080ed",
       [73,74],
-      "change-description-content-control",
       null,
+      "change-description-content-control",
       4,
       undefined
     );

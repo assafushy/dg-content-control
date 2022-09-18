@@ -132,8 +132,8 @@ export default class DgContentControls {
             contentControlData = await this.addPullRequestDescriptionTable(
               contentControlOptions.data.repoId,
               contentControlOptions.data.prIds,
-              contentControlOptions.title,
               contentControlOptions.data.linkTypeFilterArray,
+              contentControlOptions.title,
               contentControlOptions.headingLevel
             );
             break;
@@ -475,8 +475,8 @@ export default class DgContentControls {
   async addPullRequestDescriptionTable(
     repoId: string,
     prIds: any[],
-    contentControlTitle: string,
     linkTypeFilterArray: string[],
+    contentControlTitle: string,
     headingLevel?: number,
     contentControl?: contentControl
   ) {
