@@ -45,7 +45,7 @@ export default class ChangesTableDataSkinAdapter {
             },
             {
               name: "Change description",
-              value: change.workItem.fields["System.Title"],
+              value: change.workItem.fields["System.Description"],
             },
             { name: "Committed Date & Time", value: "date time" },
             { name: "Commited by", value: "commited by" },
