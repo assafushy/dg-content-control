@@ -322,19 +322,19 @@ describe("Generate json document from git Changeset", () => {
     let dgContent = new DGContentControls(
       orgUrl,
       token,
+      "attachments",
       "tests",
       "json",
       "path:\\assaf",
       "http://s3:9000",
       "your-root-user",
-      "your-root-password",
-      "placeholderPat"
+      "your-root-password"
     );
 
     await dgContent.init();
     let jsonDoc = await dgContent.addChangeDescriptionTable(
       "68f2aee7-0864-458e-93ce-320303a080ed",
-      "2021-07-21T12:51:51Z",
+      "2015-07-21T12:51:51Z",
       "2021-07-22T12:51:51Z",
       "date",
       null,
@@ -372,13 +372,13 @@ describe("Generate json document from git Changeset", () => {
     let dgContent = new DGContentControls(
       orgUrl,
       token,
+      "attachments",
       "tests",
       "json",
       "path:\\assaf",
       "http://s3:9000",
       "your-root-user",
-      "your-root-password",
-      "placeholderPat"
+      "your-root-password"
     );
 
     await dgContent.init();
@@ -391,6 +391,32 @@ describe("Generate json document from git Changeset", () => {
       "change-description-content-control",
       4
     );
+    expect(jsonDoc.wordObjects.length).toBeGreaterThan(1);
+  });
+
+  test("Generate changeset table from pull requests", async () => {
+    let dgContent = new DGContentControls(
+      orgUrl,
+      token,
+      "attachments",
+      "tests",
+      "json",
+      "path:\\assaf",
+      "http://s3:9000",
+      "your-root-user",
+      "your-root-password"
+      );
+
+    await dgContent.init();
+    let jsonDoc = await dgContent.addPullRequestDescriptionTable(
+      "68f2aee7-0864-458e-93ce-320303a080ed",
+      [73,74],
+      null,
+      "change-description-content-control",
+      4,
+      undefined
+    );
+
     expect(jsonDoc.wordObjects.length).toBeGreaterThan(1);
   });
 });

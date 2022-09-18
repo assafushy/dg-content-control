@@ -4,6 +4,7 @@ import TestDataFactory from "../factories/TestDataFactory";
 import TraceDataFactory from "../factories/TraceDataFactory";
 import RichTextDataFactory from "../factories/RichTextDataFactory";
 import ChangeDataFactory from "../factories/ChangeDataFactory";
+import PullRequestDataFactory from "../factories/PullRequestDataFactory";
 import logger from "../services/logger";
 import contentControl from "../models/contentControl";
 import * as fs from 'fs';
@@ -126,6 +127,16 @@ export default class DgContentControls {
             contentControlOptions.title,
             contentControlOptions.headingLevel
           );
+          break;
+          case "pr-change-description-table":
+            contentControlData = await this.addPullRequestDescriptionTable(
+              contentControlOptions.data.repoId,
+              contentControlOptions.data.prIds,
+              contentControlOptions.data.linkTypeFilterArray,
+              contentControlOptions.title,
+              contentControlOptions.headingLevel
+            );
+            break;
       }
       let jsonLocalData = await this.writeToJson(contentControlData)
       let jsonData = await this.uploadToMinio(jsonLocalData,this.minioEndPoint,this.jsonFileBucketName)
@@ -460,6 +471,76 @@ export default class DgContentControls {
       console.log(error.data);
     }
   }
+
+  async addPullRequestDescriptionTable(
+    repoId: string,
+    prIds: any[],
+    linkTypeFilterArray: string[],
+    contentControlTitle: string,
+    headingLevel?: number,
+    contentControl?: contentControl
+  ) {
+    let adoptedChangesData;
+    logger.debug(`fetching data with params:
+      repoId:${repoId}
+      prIds:${prIds}
+      linkTypeFilterArray:${linkTypeFilterArray}
+      teamProjectName:${this.teamProjectName}`);
+
+    try {
+      let pullRequestDataFactory = new PullRequestDataFactory(
+        this.teamProjectName,
+        repoId,
+        prIds,
+        linkTypeFilterArray,
+        this.dgDataProviderAzureDevOps
+      );
+      await pullRequestDataFactory.fetchData();
+      await pullRequestDataFactory.jsonSkinDataAdpater();
+      adoptedChangesData = pullRequestDataFactory.getAdoptedData();
+    } catch (error) {
+      logger.error(`Error initilizing change table factory`);
+      console.log(error);
+    }
+    try {
+      if (!contentControl){
+      contentControl = { title: contentControlTitle, wordObjects: [] };
+      }
+      logger.debug(JSON.stringify(contentControlTitle));
+      logger.debug(JSON.stringify(this.skins.SKIN_TYPE_TABLE));
+      logger.debug(JSON.stringify(styles));
+      logger.debug(JSON.stringify(headingLevel));
+
+      for (const artifactChangesData of adoptedChangesData) {
+        let paragraphSkins = await this.skins.addNewContentToDocumentSkin(
+          contentControlTitle,
+          this.skins.SKIN_TYPE_PARAGRAPH,
+          artifactChangesData.artifact,
+          styles,
+          headingLevel
+        );
+
+        let tableSkins = await this.skins.addNewContentToDocumentSkin(
+          contentControlTitle,
+          this.skins.SKIN_TYPE_TABLE,
+          artifactChangesData.artifactChanges,
+          styles,
+          headingLevel
+        );
+        paragraphSkins.forEach(skin => {
+          contentControl.wordObjects.push(skin);
+          });
+          tableSkins.forEach(skin => {
+          contentControl.wordObjects.push(skin);
+          });
+        return contentControl;
+      }
+    } catch (error) {
+      logger.error(`Error adding content contorl:`);
+      console.log(error.data);
+    }
+  }
+
   getDocument() {
     return this.skins.getDocumentSkin();
   }

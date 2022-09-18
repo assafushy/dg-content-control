@@ -19,7 +19,7 @@
   "license": "ISC",
   "dependencies": {
     "-": "0.0.1",
-    "@doc-gen/dg-data-provider-azuredevops": "0.0.20",
+    "@doc-gen/dg-data-provider-azuredevops": "0.2.1",
     "@doc-gen/dg-skins": "0.0.3",
     "axios": "^0.21.0",
     "dotenv": "^8.2.0",
