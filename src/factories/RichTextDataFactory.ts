@@ -26,6 +26,10 @@ export default class RichTextDataFactory {
       case `br`:
         rangesArr.push(deleteFrom, deleteTo, "\n");
         break;
+      case `b`: 
+        break;
+      case `u`:
+        break;
       case "table":
         if (!tag.slashPresent) {
           if (this.tableTagsCounter === 0) {
