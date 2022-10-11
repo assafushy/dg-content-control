@@ -226,9 +226,6 @@ export default class TestDataFactory {
         this.templatePath,
         this.dgDataProvider
       );
-      if (testCaseId == 1839) {
-        logger.debug("Stop!!!!");
-      }
       let attachmentsData = await attachmentsfactory.fetchWiAttachments(this.attachmentsBucketName, this.minioEndPoint, this.minioAccessKey, this.minioSecretKey, this.PAT);
       return attachmentsData;
     } catch (e) {
