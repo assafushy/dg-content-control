@@ -18,11 +18,12 @@ export default class RichTextDataFactory {
     this.teamProject = teamProject;
   }
   async createRichTextContent(attachmentsBucketName, minioEndPoint, minioAccessKey, minioSecretKey, PAT) {
-    await this.htmlStrip(attachmentsBucketName, minioEndPoint, minioAccessKey, minioSecretKey, PAT);
+    await this.htmlStrip();
+    await this.downloadImages(attachmentsBucketName, minioEndPoint, minioAccessKey, minioSecretKey, PAT);
   }
 
   replaceTags = ({ tag, deleteFrom, deleteTo, rangesArr }) => {
-    switch (tag.name) {
+    switch (tag.name.toLowerCase()) {
       case `br`:
         rangesArr.push(deleteFrom, deleteTo, "\n");
         break;
@@ -77,7 +78,7 @@ export default class RichTextDataFactory {
     }
   };
 
-  async htmlStrip(attachmentsBucketName,minioEndPoint, minioAccessKey, minioSecretKey, PAT) {
+  async htmlStrip() {
     this.stripedString = striphtml(this.richTextString, {
       cb: this.replaceTags,
     }).result;
@@ -96,8 +97,10 @@ export default class RichTextDataFactory {
           break;
       }
     });
+  }
 
     //download all images needed
+    async downloadImages(attachmentsBucketName,minioEndPoint, minioAccessKey, minioSecretKey, PAT) {
     await Promise.all(
       this.skinDataContentControls.map(async (skinContentControl, i) => {
         if (skinContentControl.type === "picture") {
