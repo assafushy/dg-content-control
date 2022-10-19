@@ -288,6 +288,20 @@ export default class TestDataFactory {
                   if (testCase.steps) {
                     testCaseStepsSkinData = await Promise.all(
                       testCase.steps.map(async (testStep: any, i: number) => {
+                        let richTextFactoryAction = new RichTextDataFactory(
+                          testStep.action || "",
+                          this.templatePath,
+                          this.teamProject
+                        )
+                        let richTextFactoryExpected = new RichTextDataFactory(
+                          testStep.expected || "",
+                          this.templatePath,
+                          this.teamProject
+                        )
+                        await richTextFactoryAction.htmlStrip();
+                        await richTextFactoryExpected.htmlStrip();
+                        let action = richTextFactoryAction.skinDataContentControls[0].data.fields[0].value;
+                        let expected = richTextFactoryExpected.skinDataContentControls[0].data.fields[0].value;
                         //filltering step attachments to array for the table column
                         let testStepAttachments = testCase.attachmentsData.filter(
                           attachment => {
@@ -300,10 +314,10 @@ export default class TestDataFactory {
                           ? {
                               fields: [
                                 { name: "#", value: i + 1 },
-                                { name: "Description", value: testStep.action },
+                                { name: "Description", value: action },
                                 {
                                   name: "Expected Results",
-                                  value: testStep.expected
+                                  value: expected
                                 },
                                 {
                                   name: "attachments",
@@ -314,10 +328,10 @@ export default class TestDataFactory {
                           : {
                               fields: [
                                 { name: "#", value: i + 1 },
-                                { name: "Description", value: testStep.action },
+                                { name: "Description", value: action },
                                 {
                                   name: "Expected Results",
-                                  value: testStep.expected
+                                  value: expected
                                 }
                               ]
                             };
