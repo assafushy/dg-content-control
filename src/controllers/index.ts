@@ -118,6 +118,7 @@ export default class DgContentControls {
           );
           break;
         case "change-description-table":
+          console.log('Branch Name: of case "change-description-table', contentControlOptions.branchName); // Print the branch name
           contentControlData = await this.addChangeDescriptionTable(
             contentControlOptions.data.repoId,
             contentControlOptions.data.from,
@@ -125,7 +126,8 @@ export default class DgContentControls {
             contentControlOptions.data.rangeType,
             contentControlOptions.data.linkTypeFilterArray,
             contentControlOptions.title,
-            contentControlOptions.headingLevel
+            contentControlOptions.headingLevel,
+            contentControlOptions.data.branchName
           );
           break;
           case "pr-change-description-table":
@@ -405,16 +407,20 @@ export default class DgContentControls {
     linkTypeFilterArray: string[],
     contentControlTitle: string,
     headingLevel?: number,
+    branchName?: string,
     contentControl?: contentControl
   ) {
+    console.log('branchName of addChangeDescriptionTable function:', branchName);
+
     let adoptedChangesData;
     logger.debug(`fetching data with params:
       repoId:${repoId}
       from:${from}
       to:${to}
-      rangeType: ${rangeType},
+      rangeType: ${rangeType}
       linkTypeFilterArray:${linkTypeFilterArray}
-      teamProjectName:${this.teamProjectName}`);
+      teamProjectName:${this.teamProjectName}
+      branchName:${branchName}`);
 
     try {
       let changeDataFactory = new ChangeDataFactory(
@@ -424,6 +430,7 @@ export default class DgContentControls {
         to,
         rangeType,
         linkTypeFilterArray,
+        branchName,
         this.dgDataProviderAzureDevOps
       );
       await changeDataFactory.fetchData();

@@ -28,6 +28,7 @@ export default class ChangeDataFactory {
 
   rawChangesArray: any = [];
   adoptedChangeData: any;
+  branchName: string;
 
   constructor(
     teamProjectName,
@@ -36,16 +37,17 @@ export default class ChangeDataFactory {
     to: string | number,
     rangeType: string,
     linkTypeFilterArray: string[],
+    branchName: string,
     dgDataProvider: any
   ) {
     this.dgDataProviderAzureDevOps = dgDataProvider;
     this.teamProject = teamProjectName;
-
     this.from = from;
     this.to = to;
     this.repoId = repoId;
     this.rangeType = rangeType;
     this.linkTypeFilterArray = linkTypeFilterArray;
+    this.branchName = branchName;
   } //constructor
 
   /*fetches Change table data and adopts it to json skin format */
@@ -65,7 +67,7 @@ export default class ChangeDataFactory {
           this.teamProject,
           this.repoId,
           String(this.to),
-          String(this.from)
+          String(this.from),
         );
         artifactChanges = await gitDataProvider.GetItemsInCommitRange(
           this.teamProject,
@@ -82,8 +84,12 @@ export default class ChangeDataFactory {
           this.teamProject,
           this.repoId,
           String(this.from),
-          String(this.to)
-        );
+          String(this.to),
+          this.branchName
+          );
+        
+        console.log('Commits in date range:', commitsInDateRange);
+
         artifactChanges = await gitDataProvider.GetItemsInCommitRange(
           this.teamProject,
           this.repoId,
@@ -145,8 +151,10 @@ export default class ChangeDataFactory {
                   toArtifact.definitionReference.version.id,
                   "pipeline",
                   null,
+                  "", // You can provide the appropriate branch name here or an empty string if not applicable
                   this.dgDataProviderAzureDevOps
                 );
+                
                 await buildChangeFactory.fetchData();
                 let rawData = buildChangeFactory.getRawData();
                 this.rawChangesArray = [...this.rawChangesArray, ...rawData];
