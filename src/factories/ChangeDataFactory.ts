@@ -88,8 +88,6 @@ export default class ChangeDataFactory {
           this.branchName
           );
         
-        console.log('Commits in date range:', commitsInDateRange);
-
         artifactChanges = await gitDataProvider.GetItemsInCommitRange(
           this.teamProject,
           this.repoId,

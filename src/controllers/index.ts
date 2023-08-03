@@ -118,7 +118,6 @@ export default class DgContentControls {
           );
           break;
         case "change-description-table":
-          console.log('Branch Name: of case "change-description-table', contentControlOptions.branchName); // Print the branch name
           contentControlData = await this.addChangeDescriptionTable(
             contentControlOptions.data.repoId,
             contentControlOptions.data.from,
@@ -410,8 +409,7 @@ export default class DgContentControls {
     branchName?: string,
     contentControl?: contentControl
   ) {
-    console.log('branchName of addChangeDescriptionTable function:', branchName);
-
+    
     let adoptedChangesData;
     logger.debug(`fetching data with params:
       repoId:${repoId}
