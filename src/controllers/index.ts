@@ -126,7 +126,8 @@ export default class DgContentControls {
             contentControlOptions.data.linkTypeFilterArray,
             contentControlOptions.title,
             contentControlOptions.headingLevel,
-            contentControlOptions.data.branchName
+            contentControlOptions.data.branchName,
+            contentControlOptions.data.includePullRequests
           );
           break;
           case "pr-change-description-table":
@@ -407,6 +408,7 @@ export default class DgContentControls {
     contentControlTitle: string,
     headingLevel?: number,
     branchName?: string,
+    includePullRequests?: boolean,
     contentControl?: contentControl
   ) {
     
@@ -418,7 +420,8 @@ export default class DgContentControls {
       rangeType: ${rangeType}
       linkTypeFilterArray:${linkTypeFilterArray}
       teamProjectName:${this.teamProjectName}
-      branchName:${branchName}`);
+      branchName:${branchName}
+      includePullRequests:${includePullRequests}`)
 
     try {
       let changeDataFactory = new ChangeDataFactory(
@@ -429,6 +432,7 @@ export default class DgContentControls {
         rangeType,
         linkTypeFilterArray,
         branchName,
+        includePullRequests,
         this.dgDataProviderAzureDevOps
       );
       await changeDataFactory.fetchData();
