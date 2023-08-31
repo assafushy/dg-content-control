@@ -32,13 +32,13 @@ export default class ChangesTableDataSkinAdapter {
             fields: [
               { name: "#", value: i + 1 },
               {
-                name: "test #",
-                value: "commited by",
+                name: "Change #",
+                value: "commit sha / pr id",
                 url: null,
               },
               {
                 name: "Related WI",
-                value: change.workItem.fields["System.Description"],
+                value: `${change.workItem.fields["System.Title"]} - ${change.workItem.fields["System.WorkItemType"]} ${change.workItem.id}`,
                 url: change.workItem._links.html.href,
               },
               {
