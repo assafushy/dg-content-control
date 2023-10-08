@@ -25,8 +25,11 @@ export default class RichTextDataFactory {
   replaceTags = ({ tag, deleteFrom, deleteTo, rangesArr }) => {
     switch (tag.name.toLowerCase()) {
       case `br`:
-        rangesArr.push(deleteFrom, deleteTo, "\n");
-        break;
+        const containsDivTag = /<div>/.test(this.richTextString);
+        if (!containsDivTag) {
+          rangesArr.push(deleteFrom, deleteTo, "\n");
+        }        
+         break;
       case `b`: 
         break;
       case `u`:

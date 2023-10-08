@@ -65,12 +65,12 @@ export default class TestDataFactory {
     this.attachmentsBucketName = attachmentsBucketName
   }
   async fetchTestData() {
-    let filteredPlan;
+    let testfilteredPlan;
     let testDataProvider = await this.dgDataProvider.getTestDataProvider();
     let projectTestPlans: any = await testDataProvider.GetTestPlans(
       this.teamProject
     );
-    filteredPlan = projectTestPlans.value.filter(testPlan => {
+    testfilteredPlan = projectTestPlans.value.filter(testPlan => {
       return testPlan.id === this.testPlanId;
     });
     let testSuites: any[] = await testDataProvider.GetTestSuitesByPlan(
@@ -120,7 +120,7 @@ export default class TestDataFactory {
         }
 
         this.testDataRaw = {
-          plan: filteredPlan,
+          plan: testfilteredPlan,
           suites: SuitesAndTestCases
         };
         this.adoptedTestData = await this.jsonSkinDataAdpater(null);
@@ -237,15 +237,47 @@ export default class TestDataFactory {
   //arranging the test data for json skins package
   async jsonSkinDataAdpater(adapterType: string = null) {
     let adoptedTestData;
+  
+    function containsActualText(str) {
+      var strWithoutTags = str.replace(/<[^>]*>/g, '').trim();
+      return strWithoutTags !== '';
+    }
+  
+    function cleanDivs(input) {
+      var output = input.replace(/<br[^>]*>/gi, '');
+      var divRegex = /<div[^>]*>([\s\S]*?)<\/div>/gi;
+      var match;
+      var matches = [];
+  
+      while ((match = divRegex.exec(output)) !== null) {
+        matches.push(match);
+      }
+  
+      matches.forEach(match => {
+        var fullMatch = match[0];
+        var innerContent = match[1];
+  
+        var cleanedInnerContent = cleanDivs(innerContent);
+  
+        if (containsActualText(cleanedInnerContent)) {
+          output = output.replace(fullMatch, '<div>' + cleanedInnerContent + '<br></div>');
+        } else {
+          output = output.replace(fullMatch, '');
+        }
+      });
+        // Removing the last <br> tag if present.
+          const lastIndex = output.lastIndexOf('<br>');
+          if (lastIndex !== -1) {
+          output = output.substring(0, lastIndex) + output.substring(lastIndex + 4);
+    }
+      return output;
+    }
     switch (adapterType) {
       case "test-result-group-summary":
         let testResultGroupSummaryDataSkinAdapter = new TestResultGroupSummaryDataSkinAdapter();
-        adoptedTestData = await testResultGroupSummaryDataSkinAdapter.jsonSkinDataAdpater(
-          this.testDataRaw
-        );
+        adoptedTestData = await testResultGroupSummaryDataSkinAdapter.jsonSkinDataAdpater(this.testDataRaw);
         break;
       default:
-        //!TODO - str data -- currently only std data supported
         adoptedTestData = await Promise.all(
           this.testDataRaw.suites.map(async (suite: any) => {
             let suiteSkinData = {
@@ -257,8 +289,9 @@ export default class TestDataFactory {
             };
             let testCases = await Promise.all(
               suite.testCases.map(async testCase => {
+                let cleanedDescription = cleanDivs(testCase.description || "No description");
                 let richTextFactory = new RichTextDataFactory(
-                  testCase.description || "No description",
+                  cleanedDescription,
                   this.templatePath,
                   this.teamProject
                 );
@@ -283,7 +316,11 @@ export default class TestDataFactory {
                   ],
                   level: suite.temp.level + 1
                 };
+                // Helper function to check if all the values in the array are among the target values
                 let testCaseStepsSkinData;
+                function allValuesAreTarget(array, targetValues) {
+                  return array.every(obj => targetValues.includes(obj.value));
+                }
                 try {
                   if (testCase.steps) {
                     testCaseStepsSkinData = await Promise.all(
@@ -292,17 +329,25 @@ export default class TestDataFactory {
                           testStep.action || "",
                           this.templatePath,
                           this.teamProject
-                        )
+                        );
                         let richTextFactoryExpected = new RichTextDataFactory(
                           testStep.expected || "",
                           this.templatePath,
                           this.teamProject
-                        )
+                        );
                         await richTextFactoryAction.htmlStrip();
                         await richTextFactoryExpected.htmlStrip();
+                        // Define target values
+                        const targetValues = ['\n', ' ', ''];
+
+                        // Check if all values in both arrays are among the target values
+                        if (allValuesAreTarget(richTextFactoryAction.contentControlsStrings, targetValues) &&
+                            allValuesAreTarget(richTextFactoryExpected.contentControlsStrings, targetValues)) {
+                          // Skip this iteration and move to the next one
+                          return null;
+                        }
                         let action = richTextFactoryAction.skinDataContentControls[0].data.fields[0].value;
                         let expected = richTextFactoryExpected.skinDataContentControls[0].data.fields[0].value;
-                        //filltering step attachments to array for the table column
                         let testStepAttachments = testCase.attachmentsData.filter(
                           attachment => {
                             return attachment.attachmentComment.includes(
@@ -337,6 +382,8 @@ export default class TestDataFactory {
                             };
                       })
                     );
+                    // Filter out null entries (those iterations that were skipped)
+                    testCaseStepsSkinData = testCaseStepsSkinData.filter((entry) => entry !== null);
                   }
                 } catch (err) {
                   logger.warn(
