@@ -20,7 +20,7 @@
   "dependencies": {
     "-": "0.0.1",
     "@doc-gen/dg-data-provider-azuredevops": "0.4.2",
-    "@doc-gen/dg-skins": "0.1.0",
+    "@doc-gen/dg-skins": "0.2.0",
     "axios": "^0.21.0",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
