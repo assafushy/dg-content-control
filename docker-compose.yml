@@ -32,7 +32,7 @@ services:
   dg-api-gate:
     image: assafushy/dg-api-gate:latest
     ports:
-      - "3001:3000"
+      - "30001:3000"
     environment:
       <<: *common-vars
       MINIO_ENDPOINT: "s3"

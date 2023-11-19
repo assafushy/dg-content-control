@@ -17,7 +17,7 @@ let styles = {
   IsUnderline: false,
   Size: 12,
   Uri: null,
-  Font: "Ariel",
+  Font: "Arial",
   InsertLineBreak: false,
   InsertSpace: false,
 };
