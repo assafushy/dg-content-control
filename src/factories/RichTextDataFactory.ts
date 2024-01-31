@@ -82,9 +82,14 @@ export default class RichTextDataFactory {
   };
 
   async htmlStrip() {
-    this.stripedString = striphtml(this.richTextString, {
-      cb: this.replaceTags,
-    }).result;
+    const containsDivTag = /<div>/.test(this.richTextString);
+      if (!containsDivTag) {
+        this.stripedString = striphtml(this.richTextString, {
+          cb: this.replaceTags,
+          }).result;        }      
+      else {
+        this.stripedString = this.richTextString
+        }
     this.stripedString = "-----ST-PAR-----" + this.stripedString;
     this.stripedStringParser();
     this.contentControlsStrings.forEach((contentControl) => {

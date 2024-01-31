@@ -238,40 +238,6 @@ export default class TestDataFactory {
   async jsonSkinDataAdpater(adapterType: string = null) {
     let adoptedTestData;
   
-    function containsActualText(str) {
-      var strWithoutTags = str.replace(/<[^>]*>/g, '').trim();
-      return strWithoutTags !== '';
-    }
-  
-    function cleanDivs(input) {
-      var output = input.replace(/<br[^>]*>/gi, '');
-      var divRegex = /<div[^>]*>([\s\S]*?)<\/div>/gi;
-      var match;
-      var matches = [];
-  
-      while ((match = divRegex.exec(output)) !== null) {
-        matches.push(match);
-      }
-  
-      matches.forEach(match => {
-        var fullMatch = match[0];
-        var innerContent = match[1];
-  
-        var cleanedInnerContent = cleanDivs(innerContent);
-  
-        if (containsActualText(cleanedInnerContent)) {
-          output = output.replace(fullMatch, '<div>' + cleanedInnerContent + '<br></div>');
-        } else {
-          output = output.replace(fullMatch, '');
-        }
-      });
-        // Removing the last <br> tag if present.
-          const lastIndex = output.lastIndexOf('<br>');
-          if (lastIndex !== -1) {
-          output = output.substring(0, lastIndex) + output.substring(lastIndex + 4);
-    }
-      return output;
-    }
     switch (adapterType) {
       case "test-result-group-summary":
         let testResultGroupSummaryDataSkinAdapter = new TestResultGroupSummaryDataSkinAdapter();
@@ -289,9 +255,9 @@ export default class TestDataFactory {
             };
             let testCases = await Promise.all(
               suite.testCases.map(async testCase => {
-                let cleanedDescription = cleanDivs(testCase.description || "No description");
+                let Description = testCase.description || "No description";
                 let richTextFactory = new RichTextDataFactory(
-                  cleanedDescription,
+                  Description,
                   this.templatePath,
                   this.teamProject
                 );
