@@ -78,6 +78,18 @@ export default class RichTextDataFactory {
     }
   };
 
+  replaceTags2 = ({ tag, deleteFrom, deleteTo, rangesArr }) => {
+    switch (tag.name.toLowerCase()) {
+      case "img":
+        rangesArr.push(
+          deleteFrom,
+          deleteFrom,
+          "-----EN-PAR----- -----ST-IMG-----"
+        );
+        rangesArr.push(deleteTo, deleteTo, "-----EN-IMG----- -----ST-PAR-----");
+    }
+  };
+
   async htmlStrip() {
     const containsDivTag = /<div>/.test(this.richTextString);
       if (!containsDivTag) {
@@ -87,8 +99,11 @@ export default class RichTextDataFactory {
           }).result;      
         }      
       else {
-        console.log("...............include div.............", this.richTextString)
-        this.stripedString = this.richTextString
+        console.log("-----before include div---------", this.richTextString)
+        this.stripedString = striphtml(this.richTextString, {
+          cb: this.replaceTags2,
+          }).result;   
+          console.log("-----after include div---------", this.stripedString)
         }
     this.stripedString = "-----ST-PAR-----" + this.stripedString;
     this.stripedStringParser();
