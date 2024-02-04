@@ -22,19 +22,15 @@ export default class RichTextDataFactory {
     await this.downloadImages(attachmentsBucketName, minioEndPoint, minioAccessKey, minioSecretKey, PAT);
   }
 
-  replaceTags = ({ tag, deleteFrom, deleteTo, rangesArr }) => {
-    const containsdivTag = /<div>/.test(this.richTextString);
+  replaceTagsTestProcedure = ({ tag, deleteFrom, deleteTo, rangesArr }) => {
     switch (tag.name.toLowerCase()) {
       case `br`:
-        if (!containsdivTag) {
           rangesArr.push(deleteFrom, deleteTo, "\n");
-        }     
          break;
       case `b`: 
         break;
       case `u`:
         break;
-      /*
       case "table":
         if (!tag.slashPresent) {
           if (this.tableTagsCounter === 0) {
@@ -56,13 +52,12 @@ export default class RichTextDataFactory {
           }
         }
         break;
-        */
-  //    case "tr":
-  //      rangesArr.push(deleteFrom, deleteTo, "<tr>");
-  //      break;
-  //    case "td":
-  //      rangesArr.push(deleteFrom, deleteTo, "<td>");
- //       break;
+      case "tr":
+        rangesArr.push(deleteFrom, deleteTo, "<tr>");
+        break;
+      case "td":
+        rangesArr.push(deleteFrom, deleteTo, "<td>");
+        break;
       case "img":
         rangesArr.push(
           deleteFrom,
@@ -78,14 +73,12 @@ export default class RichTextDataFactory {
       case `li`:
         break;
       default:
-        if (!containsdivTag) {
           rangesArr.push(deleteFrom, deleteTo, " ");
-        }    
         break;
     }
   };
 
-  replaceTags2 = ({ tag, deleteFrom, deleteTo, rangesArr }) => {
+  replaceTagsTestDescription = ({ tag, deleteFrom, deleteTo, rangesArr }) => {
     switch (tag.name.toLowerCase()) {
       case "img":
         rangesArr.push(
@@ -98,9 +91,17 @@ export default class RichTextDataFactory {
   };
 
   async htmlStrip() {
-    this.stripedString = striphtml(this.richTextString, {
-      cb: this.replaceTags,
-    }).result;
+    const containsDivTag = /<div>/.test(this.richTextString);
+      if (!containsDivTag) {
+        this.stripedString = striphtml(this.richTextString, {
+          cb: this.replaceTagsTestProcedure,
+          }).result;      
+        }      
+      else {
+        this.stripedString = striphtml(this.richTextString, {
+          cb: this.replaceTagsTestDescription,
+          }).result;   
+        }
     this.stripedString = "-----ST-PAR-----" + this.stripedString;
     this.stripedStringParser();
     this.contentControlsStrings.forEach((contentControl) => {
