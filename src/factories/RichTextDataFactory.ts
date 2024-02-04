@@ -25,10 +25,7 @@ export default class RichTextDataFactory {
   replaceTags = ({ tag, deleteFrom, deleteTo, rangesArr }) => {
     switch (tag.name.toLowerCase()) {
       case `br`:
-        const containsDivTag = /<div>/.test(this.richTextString);
-        if (!containsDivTag) {
           rangesArr.push(deleteFrom, deleteTo, "\n");
-        }        
          break;
       case `b`: 
         break;
@@ -82,14 +79,17 @@ export default class RichTextDataFactory {
   };
 
   async htmlStrip() {
-    const containsDivTag = /<div>/.test(this.richTextString);
-      if (!containsDivTag) {
-        this.stripedString = striphtml(this.richTextString, {
-          cb: this.replaceTags,
-          }).result;        }      
-      else {
-        this.stripedString = this.richTextString
-        }
+    this.stripedString = striphtml(this.richTextString, {
+      cb: this.replaceTags,
+    }).result;
+   // const containsDivTag = /<div>/.test(this.richTextString);
+     // if (!containsDivTag) {
+       // this.stripedString = striphtml(this.richTextString, {
+         // cb: this.replaceTags,
+        //  }).result;        }      
+     // else {
+       // this.stripedString = this.richTextString
+      //  }
     this.stripedString = "-----ST-PAR-----" + this.stripedString;
     this.stripedStringParser();
     this.contentControlsStrings.forEach((contentControl) => {
