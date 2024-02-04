@@ -55,12 +55,12 @@ export default class RichTextDataFactory {
           }
         }
         break;
-      case "tr":
-        rangesArr.push(deleteFrom, deleteTo, "<tr>");
-        break;
-      case "td":
-        rangesArr.push(deleteFrom, deleteTo, "<td>");
-        break;
+  //    case "tr":
+  //      rangesArr.push(deleteFrom, deleteTo, "<tr>");
+  //      break;
+  //    case "td":
+  //      rangesArr.push(deleteFrom, deleteTo, "<td>");
+ //       break;
       case "img":
         rangesArr.push(
           deleteFrom,
