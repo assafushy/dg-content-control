@@ -81,10 +81,13 @@ export default class RichTextDataFactory {
   async htmlStrip() {
     const containsDivTag = /<div>/.test(this.richTextString);
       if (!containsDivTag) {
+        console.log("-----Dont include div---------", this.richTextString)
         this.stripedString = striphtml(this.richTextString, {
           cb: this.replaceTags,
-          }).result;        }      
+          }).result;      
+        }      
       else {
+        console.log("...............include div.............", this.richTextString)
         this.stripedString = this.richTextString
         }
     this.stripedString = "-----ST-PAR-----" + this.stripedString;
