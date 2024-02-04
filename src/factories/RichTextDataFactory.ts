@@ -34,6 +34,7 @@ export default class RichTextDataFactory {
         break;
       case `u`:
         break;
+      /*
       case "table":
         if (!tag.slashPresent) {
           if (this.tableTagsCounter === 0) {
@@ -55,6 +56,7 @@ export default class RichTextDataFactory {
           }
         }
         break;
+        */
   //    case "tr":
   //      rangesArr.push(deleteFrom, deleteTo, "<tr>");
   //      break;
