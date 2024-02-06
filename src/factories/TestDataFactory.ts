@@ -384,8 +384,10 @@ export default class TestDataFactory {
                             name: "attachment name",
                             value: attachment.attachmentFileName,
                             url: attachment.attachmentLink,
-                            relativeUrl: attachment.relativeAttachmentLink
+                            relativeUrl: attachment.relativeAttachmentLink,
+                            testCaseAttachments: testCaseAttachments
                           }
+                   
                         ]
                       };
                     })
