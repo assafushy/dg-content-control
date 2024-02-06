@@ -380,11 +380,10 @@ export default class TestDataFactory {
                       return {
                         fields: [
                           { name: "#", value: i + 1 },
+             
                           {
-                            name: "attachment name",
-                            value: attachment.attachmentFileName,
-                            url: attachment.attachmentLink,
-                            relativeUrl: attachment.relativeAttachmentLink
+                            name: "attachments",
+                            value: testCaseAttachments
                           }
                         ]
                       };
