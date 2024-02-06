@@ -22,13 +22,10 @@ export default class RichTextDataFactory {
     await this.downloadImages(attachmentsBucketName, minioEndPoint, minioAccessKey, minioSecretKey, PAT);
   }
 
-  replaceTags = ({ tag, deleteFrom, deleteTo, rangesArr }) => {
+  replaceTagsTestProcedure = ({ tag, deleteFrom, deleteTo, rangesArr }) => {
     switch (tag.name.toLowerCase()) {
       case `br`:
-        const containsDivTag = /<div>/.test(this.richTextString);
-        if (!containsDivTag) {
           rangesArr.push(deleteFrom, deleteTo, "\n");
-        }        
          break;
       case `b`: 
         break;
@@ -76,8 +73,20 @@ export default class RichTextDataFactory {
       case `li`:
         break;
       default:
-        rangesArr.push(deleteFrom, deleteTo, " ");
+          rangesArr.push(deleteFrom, deleteTo, " ");
         break;
+    }
+  };
+
+  replaceTagsTestDescription = ({ tag, deleteFrom, deleteTo, rangesArr }) => {
+    switch (tag.name.toLowerCase()) {
+      case "img":
+        rangesArr.push(
+          deleteFrom,
+          deleteFrom,
+          "-----EN-PAR----- -----ST-IMG-----"
+        );
+        rangesArr.push(deleteTo, deleteTo, "-----EN-IMG----- -----ST-PAR-----");
     }
   };
 
@@ -85,10 +94,13 @@ export default class RichTextDataFactory {
     const containsDivTag = /<div>/.test(this.richTextString);
       if (!containsDivTag) {
         this.stripedString = striphtml(this.richTextString, {
-          cb: this.replaceTags,
-          }).result;        }      
+          cb: this.replaceTagsTestProcedure,
+          }).result;      
+        }      
       else {
-        this.stripedString = this.richTextString
+        this.stripedString = striphtml(this.richTextString, {
+          cb: this.replaceTagsTestDescription,
+          }).result;   
         }
     this.stripedString = "-----ST-PAR-----" + this.stripedString;
     this.stripedStringParser();
