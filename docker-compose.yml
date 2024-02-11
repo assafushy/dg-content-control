@@ -7,13 +7,13 @@ x-common-variables: &common-vars
   MINIO_REGION: "ap-southeast-1"
 services:
   dg-fe:
-    image: assafushy/dg-front-end:latest
+    image: assafushy/dg-front-end:0.7.9
     ports:
       - "80:80"
     environment:
       BACKEND-URL-PLACEHOLDER-ContentControl: "http://dg-api-gate:3001"
   dg-init-job:
-    image: assafushy/dg-initializer:latest
+    image: assafushy/dg-initializer:0.0.5750417409
     depends_on:
       - "s3"
     environment:
@@ -22,15 +22,12 @@ services:
       MINIOROOTPASSWORD: "your-root-password"
   dg-content-control:
     build: .
-    command: npm run start
-    volumes:
-      - ./:/usr/src/app
     ports:
       - "3000:3000"
     environment:
       downloadManagerUrl: "http://download-manager:8000"
   dg-api-gate:
-    image: assafushy/dg-api-gate:latest
+    image: assafushy/dg-api-gate:0.13.1
     ports:
       - "30001:3000"
     environment:
@@ -40,7 +37,7 @@ services:
       jsonToWordPostUrl: "http://json-to-word:5000"
       minioPublicEndPoint: "http://localhost:9000" #change with hosted machine hostname
   json-to-word:
-    image: assafushy/json-to-word:latest
+    image: assafushy/json-to-word:0.0.6468129080
     ports:
       - "5000:5000"
   s3:
@@ -54,6 +51,6 @@ services:
       <<: *common-vars
     command: server --address 0.0.0.0:9000  --console-address ":4000" /data
   python-download-service:
-    image: assafushy/dg-download-manager:latest
+    image: assafushy/dg-download-manager:0.0.5750417408
     ports:
       - "8000:8000"
