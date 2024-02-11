@@ -22,13 +22,10 @@ export default class RichTextDataFactory {
     await this.downloadImages(attachmentsBucketName, minioEndPoint, minioAccessKey, minioSecretKey, PAT);
   }
 
-  replaceTags = ({ tag, deleteFrom, deleteTo, rangesArr }) => {
+  replaceTagsTestProcedure = ({ tag, deleteFrom, deleteTo, rangesArr }) => {
     switch (tag.name.toLowerCase()) {
       case `br`:
-        const containsDivTag = /<div>/.test(this.richTextString);
-        if (!containsDivTag) {
           rangesArr.push(deleteFrom, deleteTo, "\n");
-        }        
          break;
       case `b`: 
         break;
@@ -76,15 +73,35 @@ export default class RichTextDataFactory {
       case `li`:
         break;
       default:
-        rangesArr.push(deleteFrom, deleteTo, " ");
+          rangesArr.push(deleteFrom, deleteTo, " ");
         break;
     }
   };
 
+  replaceTagsTestDescription = ({ tag, deleteFrom, deleteTo, rangesArr }) => {
+    switch (tag.name.toLowerCase()) {
+      case "img":
+        rangesArr.push(
+          deleteFrom,
+          deleteFrom,
+          "-----EN-PAR----- -----ST-IMG-----"
+        );
+        rangesArr.push(deleteTo, deleteTo, "-----EN-IMG----- -----ST-PAR-----");
+    }
+  };
+
   async htmlStrip() {
-    this.stripedString = striphtml(this.richTextString, {
-      cb: this.replaceTags,
-    }).result;
+    const containsDivTag = /<div>/.test(this.richTextString);
+      if (!containsDivTag) {
+        this.stripedString = striphtml(this.richTextString, {
+          cb: this.replaceTagsTestProcedure,
+          }).result;      
+        }      
+      else {
+        this.stripedString = striphtml(this.richTextString, {
+          cb: this.replaceTagsTestDescription,
+          }).result;   
+        }
     this.stripedString = "-----ST-PAR-----" + this.stripedString;
     this.stripedStringParser();
     this.contentControlsStrings.forEach((contentControl) => {
@@ -112,6 +129,8 @@ export default class RichTextDataFactory {
             imageUrl.indexOf("?") + 10,
             imageUrl.length
           );
+          console.log("imageUrl:", imageUrl, "imageFileName:", imageFileName); // Add this line
+
           imageUrl = imageUrl.substring(0, imageUrl.indexOf("?"));
           
           let downloadManager = new DownloadManager(
@@ -125,7 +144,11 @@ export default class RichTextDataFactory {
             PAT
             );
           let attachmentData = await downloadManager.downloadFile();
+          console.log("attachmentData:", attachmentData); // Add this line
+
           this.attachmentMinioData.push(attachmentData);
+          console.log("attachmentData.fileName:", attachmentData.fileName); // Add this line too
+
           this.skinDataContentControls[
             i
           ].data = `TempFiles/${attachmentData.fileName}`;
