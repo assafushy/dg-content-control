@@ -129,6 +129,8 @@ export default class RichTextDataFactory {
             imageUrl.indexOf("?") + 10,
             imageUrl.length
           );
+          console.log("imageUrl:", imageUrl, "imageFileName:", imageFileName); // Add this line
+
           imageUrl = imageUrl.substring(0, imageUrl.indexOf("?"));
           
           let downloadManager = new DownloadManager(
@@ -142,7 +144,11 @@ export default class RichTextDataFactory {
             PAT
             );
           let attachmentData = await downloadManager.downloadFile();
+          console.log("attachmentData:", attachmentData); // Add this line
+
           this.attachmentMinioData.push(attachmentData);
+          console.log("attachmentData.fileName:", attachmentData.fileName); // Add this line too
+
           this.skinDataContentControls[
             i
           ].data = `TempFiles/${attachmentData.fileName}`;
