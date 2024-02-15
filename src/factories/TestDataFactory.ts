@@ -378,7 +378,7 @@ export default class TestDataFactory {
                 )
                 let testCaseAttachments = await Promise.all(
                   filteredTestCaseAttachments
-                    .map(async (attachment, i) => {
+                    .map(async (i) => {
                       return {
                         fields: [
                           { name: "#", value: i + 1 },
