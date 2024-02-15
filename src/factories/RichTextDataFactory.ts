@@ -104,7 +104,6 @@ export default class RichTextDataFactory {
         this.stripedString = striphtml(this.richTextString, {
           cb: this.replaceTagsTestDescription,
           }).result; 
-        console.log("//////////////////////////this.stripedString////////////////////", this.stripedString)
         }
     this.stripedString = "-----ST-PAR-----" + this.stripedString;
     this.stripedStringParser();
