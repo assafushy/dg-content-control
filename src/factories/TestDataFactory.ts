@@ -4,7 +4,6 @@ import AttachmentsDataFactory from "./AttachmentsDataFactory";
 import TestResultGroupSummaryDataSkinAdapter from "../adapters/TestResultGroupSummaryDataSkinAdapter";
 import logger from "../services/logger";
 
-
 const styles = {
   isBold: false,
   IsItalic: false,
@@ -371,23 +370,27 @@ export default class TestDataFactory {
                   ];
                 }
 
-                let filteredTestCaseAttachments = testCase.attachmentsData
-                .filter(
-                  attachment =>
-                    !attachment.attachmentComment.includes(`TestStep=`)
-                )
                 let testCaseAttachments = await Promise.all(
-                  filteredTestCaseAttachments
-                    .map(async (i) => {
+                  testCase.attachmentsData
+                    .filter(
+                      attachment =>
+                        !attachment.attachmentComment.includes(`TestStep=`)
+                    )
+                    .map(async (attachment, i) => {
                       return {
                         fields: [
                           { name: "#", value: i + 1 },
-                          { name: "Attachments", value: [filteredTestCaseAttachments[i]] }
-                          
+                          {
+                            name: "attachment name",
+                            value: attachment.attachmentFileName,
+                            url: attachment.attachmentLink,
+                            relativeUrl: attachment.relativeAttachmentLink
+                          }
                         ]
                       };
                     })
                 );
+
                 let adoptedTestCaseData = {
                   testCaseHeaderSkinData,
                   testCaseStepsSkinData,
@@ -415,3 +418,4 @@ export default class TestDataFactory {
     return this.attachmentMinioData;
   }
 }
+
