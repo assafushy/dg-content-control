@@ -4,6 +4,7 @@ import AttachmentsDataFactory from "./AttachmentsDataFactory";
 import TestResultGroupSummaryDataSkinAdapter from "../adapters/TestResultGroupSummaryDataSkinAdapter";
 import logger from "../services/logger";
 
+
 const styles = {
   isBold: false,
   IsItalic: false,
