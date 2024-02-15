@@ -72,6 +72,9 @@ export default class RichTextDataFactory {
         break;
       case `li`:
         break;
+      case "font":
+          rangesArr.push(deleteFrom, deleteTo, "");
+        break;
       default:
           rangesArr.push(deleteFrom, deleteTo, " ");
         break;
