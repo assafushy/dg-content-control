@@ -22,13 +22,10 @@ services:
       MINIOROOTPASSWORD: "your-root-password"
   dg-content-control:
     build: .
-    command: npm run start
-    volumes:
-      - ./:/usr/src/app
     ports:
       - "3000:3000"
     environment:
-      downloadManagerUrl: "http://download-manager:8000"
+      downloadManagerUrl: "http://python-download-service:3000"
   dg-api-gate:
     image: assafushy/dg-api-gate:latest
     ports:
@@ -36,7 +33,7 @@ services:
     environment:
       <<: *common-vars
       MINIO_ENDPOINT: "s3"
-      dgContentControlUrl: "http://python-download-service:3000"
+      dgContentControlUrl: "http://dg-content-control:3000"
       jsonToWordPostUrl: "http://json-to-word:5000"
       minioPublicEndPoint: "http://localhost:9000" #change with hosted machine hostname
   json-to-word:
