@@ -285,12 +285,9 @@ export default class DgContentControls {
       skins.forEach(skin => {
         // Check if skin is of type 'paragraph' and contains the text 'Test Description:'
         if (skin.type === 'paragraph' && skin.runs.some(run => run.text === 'Test Description:')) {
-            console.log("Skipped skin: ", skin);
             return; // Skip this skin
         }
-    
-        console.log("--------skin-------------", skin);
-        contentControl.wordObjects.push(skin);
+            contentControl.wordObjects.push(skin);
     });
       return contentControl;
     } catch (error) {
