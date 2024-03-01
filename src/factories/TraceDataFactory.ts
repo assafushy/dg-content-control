@@ -5,9 +5,9 @@ const styles = {
   isBold: false,
   IsItalic: false,
   IsUnderline: false,
-  Size: 10,
+  Size: 12,
   Uri: null,
-  Font: "New Times Roman",
+  Font: "Arial",
   InsertLineBreak: false,
   InsertSpace: false,
 };
