@@ -79,6 +79,7 @@ export default class RichTextDataFactory {
   };
 
   async htmlStrip() {
+    console.log(this.richTextString, "this.richTextString")
     this.stripedString = striphtml(this.richTextString, {
       cb: this.replaceTags,
     }).result;
@@ -219,6 +220,7 @@ export default class RichTextDataFactory {
   }
 
   paragraphDataParser(contentString: string) {
+    console.log("contentString", contentString)
     let paragraphData = { fields: [{ name: "text", value: contentString }] };
     this.skinDataContentControls.push({
       type: "paragraph",
