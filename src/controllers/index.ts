@@ -457,6 +457,9 @@ export default class DgContentControls {
       await changeDataFactory.fetchData();
       await changeDataFactory.jsonSkinDataAdpater();
       adoptedChangesData = changeDataFactory.getAdoptedData();
+      adoptedChangesData.forEach(item => {
+        console.log("Suite Skin Data1:", item.suiteSkinData);
+      });
     } catch (error) {
       logger.error(`Error initilizing change table factory`);
       console.log(error);
