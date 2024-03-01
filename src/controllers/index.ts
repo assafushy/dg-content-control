@@ -287,7 +287,6 @@ export default class DgContentControls {
         if (skin.type === 'paragraph' && skin.runs.some(run => run.text === 'Test Description:')) {
             return; // Skip this skin
         }
-        console.log("skin", skin)
         contentControl.wordObjects.push(skin);
     });
       return contentControl;
