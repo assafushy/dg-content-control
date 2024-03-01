@@ -138,6 +138,12 @@ export default class DgContentControls {
             );
             break;
       }
+      if (contentControlData) {
+        for (const wordObject of contentControlData.wordObjects) {
+          // Process each wordObject here
+          console.log(wordObject); // Replace with your desired processing logic
+        }
+      }
       let jsonLocalData = await this.writeToJson(contentControlData)
       let jsonData = await this.uploadToMinio(jsonLocalData,this.minioEndPoint,this.jsonFileBucketName)
       this.deleteFile(jsonLocalData)

@@ -7,7 +7,7 @@ x-common-variables: &common-vars
   MINIO_REGION: "ap-southeast-1"
 services:
   dg-fe:
-    image: assafushy/dg-front-end:latest
+    image: assafushy/dg-front-end:0.7.0
     ports:
       - "80:80"
     environment:
@@ -22,9 +22,6 @@ services:
       MINIOROOTPASSWORD: "your-root-password"
   dg-content-control:
     build: .
-    command: npm run start
-    volumes:
-      - ./:/usr/src/app
     ports:
       - "3000:3000"
     environment:
@@ -44,7 +41,7 @@ services:
     ports:
       - "5000:5000"
   s3:
-    image: minio/minio
+    image: minio/minio:RELEASE.2022-06-11T19-55-32Z.fips
     ports:
       - "9000:9000"
       - "4000:4000"
