@@ -138,17 +138,17 @@ export default class DgContentControls {
             );
             break;
       }
-      if (contentControlData) {
-        contentControlData.wordObjects = contentControlData.wordObjects.filter(wordObject => {
-            // Keep the wordObject if it is not of type 'paragraph' with the text 'Test Description:'
-            return !(wordObject.type === 'paragraph' && wordObject.runs.some(run => run.text === 'Test Description:'));
-        });
-
-        // Process the remaining wordObjects as usual
-        for (const wordObject of contentControlData.wordObjects) {
-            console.log(wordObject); // Process the wordObject
-        }
-    }
+ //     if (contentControlData) {
+ //       contentControlData.wordObjects = contentControlData.wordObjects.filter(wordObject => {
+ //           // Keep the wordObject if it is not of type 'paragraph' with the text 'Test Description:'
+ //           return !(wordObject.type === 'paragraph' && wordObject.runs.some(run => run.text === 'Test Description:'));
+ //       });
+//
+ //       // Process the remaining wordObjects as usual
+ //       for (const wordObject of contentControlData.wordObjects) {
+ //           console.log(wordObject); // Process the wordObject
+ //       }
+ //   }
       let jsonLocalData = await this.writeToJson(contentControlData)
       let jsonData = await this.uploadToMinio(jsonLocalData,this.minioEndPoint,this.jsonFileBucketName)
       this.deleteFile(jsonLocalData)
@@ -283,6 +283,7 @@ export default class DgContentControls {
         includeAttachments
       );
       skins.forEach(skin => {
+        console.log("--------skin-------------", skin)
         contentControl.wordObjects.push(skin);
         });
       return contentControl;
