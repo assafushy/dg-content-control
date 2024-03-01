@@ -125,6 +125,7 @@ export default class TestDataFactory {
         };
         this.adoptedTestData = await this.jsonSkinDataAdpater(null);
       }
+      console.log("this.adoptedTestData", this.adoptedTestData)
     } catch (err) {
       console.log(err);
     }
