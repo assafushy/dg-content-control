@@ -294,7 +294,7 @@ export default class DgContentControls {
         }
         let suiteInfo = skinDataWithSuiteInfo.find(skinData => skinData.skin === skin);
     if (suiteInfo) {
-        console.log("Suite Skin Data:", suiteInfo.suiteSkinData);
+        console.log("Suite Skin Data2:", suiteInfo.suiteSkinData);
     }
         contentControl.wordObjects.push(skin);
     });
@@ -403,6 +403,9 @@ export default class DgContentControls {
       logger.debug(JSON.stringify(styles));
       logger.debug(JSON.stringify(headingLevel));
       let adoptedData = await testDataFactory.getAdoptedTestData();
+      adoptedData.forEach(item => {
+        console.log("Suite Skin Data1:", item.suiteSkinData);
+      });
       let skins = await this.skins.addNewContentToDocumentSkin(
         contentControlTitle,
         this.skins.SKIN_TYPE_TEST_PLAN,
