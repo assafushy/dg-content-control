@@ -260,7 +260,6 @@ export default class DgContentControls {
         this.PAT,
       )
       await testDataFactory.fetchTestData();
-      console.log("testDataFactory.adoptedTestData", testDataFactory.adoptedTestData)
       testDataFactory.adoptedTestData.forEach(item => {
         console.log("Suite Skin Data1:", item.suiteSkinData);
       });
@@ -414,9 +413,9 @@ export default class DgContentControls {
       logger.debug(JSON.stringify(headingLevel));
       let adoptedData = await testDataFactory.getAdoptedTestData();
       console.log("adoptedData", adoptedData)
-      adoptedData.forEach(item => {
-        console.log("Suite Skin Data1:", item.suiteSkinData);
-      });
+     // adoptedData.forEach(item => {
+     //   console.log("Suite Skin Data1:", item.suiteSkinData);
+     // });
       let skins = await this.skins.addNewContentToDocumentSkin(
         contentControlTitle,
         this.skins.SKIN_TYPE_TEST_PLAN,
