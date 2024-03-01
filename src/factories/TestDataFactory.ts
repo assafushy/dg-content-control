@@ -125,8 +125,9 @@ export default class TestDataFactory {
         };
         this.adoptedTestData = await this.jsonSkinDataAdpater(null);
       }
-      console.log("this.adoptedTestData", this.adoptedTestData)
-    } catch (err) {
+      this.adoptedTestData.forEach(item => {
+        console.log("Suite Skin Data adoptedTestData:", item.suiteSkinData);
+    });    } catch (err) {
       console.log(err);
     }
     return [];
@@ -256,7 +257,6 @@ export default class TestDataFactory {
               ],
               level: suite.temp.level
             };
-            console.log("suiteSkinData", suiteSkinData)
             let testCases = await Promise.all(
               suite.testCases.map(async testCase => {
                 let richTextFactory = new RichTextDataFactory(
