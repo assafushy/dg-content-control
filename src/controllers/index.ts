@@ -403,6 +403,7 @@ export default class DgContentControls {
       logger.debug(JSON.stringify(styles));
       logger.debug(JSON.stringify(headingLevel));
       let adoptedData = await testDataFactory.getAdoptedTestData();
+      console.log("adoptedData", adoptedData)
       adoptedData.forEach(item => {
         console.log("Suite Skin Data1:", item.suiteSkinData);
       });

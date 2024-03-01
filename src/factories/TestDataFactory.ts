@@ -126,7 +126,7 @@ export default class TestDataFactory {
         this.adoptedTestData = await this.jsonSkinDataAdpater(null);
       }
       this.adoptedTestData.forEach(item => {
-        console.log("Suite Skin Data adoptedTestData:", item.suiteSkinData);
+        //console.log("Suite Skin Data adoptedTestData:", item.suiteSkinData);
     });    } catch (err) {
       console.log(err);
     }
