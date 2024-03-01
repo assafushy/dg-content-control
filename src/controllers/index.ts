@@ -284,7 +284,7 @@ export default class DgContentControls {
     });
     skinDataWithSuiteInfo.forEach(item => {
       if (item.skin && item.skin.testCaseHeaderSkinData) {
-        console.log("testCaseHeaderSkinData before addNewContentToDocumentSkin:", item.skin.testCaseHeaderSkinData);
+   //     console.log("testCaseHeaderSkinData before addNewContentToDocumentSkin:", item.skin.testCaseHeaderSkinData);
       }
     });
         let skins = await this.skins.addNewContentToDocumentSkin(
@@ -295,7 +295,7 @@ export default class DgContentControls {
         headingLevel,
         includeAttachments
       );
-      console.log(skins, "----------------skins-------------", skins)
+    //  console.log(skins, "----------------skins-------------", skins)
       skins.forEach(skin => {
         // Check if skin is of type 'paragraph' and contains the text 'Test Description:'
         if (skin.type === 'paragraph' && skin.runs.some(run => run.text === 'Test Description:')) {
