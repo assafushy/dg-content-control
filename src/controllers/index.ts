@@ -457,6 +457,7 @@ export default class DgContentControls {
       await changeDataFactory.fetchData();
       await changeDataFactory.jsonSkinDataAdpater();
       adoptedChangesData = changeDataFactory.getAdoptedData();
+      console.log("adoptedChangesData",adoptedChangesData)
       adoptedChangesData.forEach(item => {
         console.log("Suite Skin Data1:", item.suiteSkinData);
       });
