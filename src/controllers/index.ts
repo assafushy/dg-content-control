@@ -279,8 +279,12 @@ export default class DgContentControls {
             return { skin: testCase, suiteSkinData: testData.suiteSkinData };
         });
     });
-      console.log("skinDataWithSuiteInfo", skinDataWithSuiteInfo)
-      let skins = await this.skins.addNewContentToDocumentSkin(
+    skinDataWithSuiteInfo.forEach(item => {
+      if (item.skin && item.skin.testCaseHeaderSkinData) {
+        console.log("testCaseHeaderSkinData:", item.skin.testCaseHeaderSkinData);
+      }
+    });
+        let skins = await this.skins.addNewContentToDocumentSkin(
         contentControlTitle,
         this.skins.SKIN_TYPE_TEST_PLAN,
         testDataFactory.adoptedTestData,
