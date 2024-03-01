@@ -274,6 +274,11 @@ export default class DgContentControls {
       logger.debug(JSON.stringify(headingLevel));
       let attachmentData = await testDataFactory.getAttachmentMinioData();
       this.minioAttachmentData = this.minioAttachmentData.concat(attachmentData)
+      let skinDataWithSuiteInfo = testDataFactory.adoptedTestData.flatMap(testData => {
+        return testData.testCases.map(testCase => {
+            return { skin: testCase, suiteSkinData: testData.suiteSkinData };
+        });
+    });
       let skins = await this.skins.addNewContentToDocumentSkin(
         contentControlTitle,
         this.skins.SKIN_TYPE_TEST_PLAN,
@@ -287,6 +292,10 @@ export default class DgContentControls {
         if (skin.type === 'paragraph' && skin.runs.some(run => run.text === 'Test Description:')) {
             return; // Skip this skin
         }
+        let suiteInfo = skinDataWithSuiteInfo.find(skinData => skinData.skin === skin);
+    if (suiteInfo) {
+        console.log("Suite Skin Data:", suiteInfo.suiteSkinData);
+    }
         contentControl.wordObjects.push(skin);
     });
       return contentControl;
