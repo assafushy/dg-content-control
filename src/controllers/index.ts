@@ -140,10 +140,14 @@ export default class DgContentControls {
       }
       if (contentControlData) {
         for (const wordObject of contentControlData.wordObjects) {
-          // Process each wordObject here
-          console.log(wordObject); // Replace with your desired processing logic
+            // Check if the wordObject is of type 'paragraph' and contains the text 'Test Description:'
+            if (wordObject.type === 'paragraph' && wordObject.runs.some(run => run.text === 'Test Description:')) {
+                continue; // Skip this wordObject
+            }
+
+            console.log(wordObject); // Process the wordObject as normal
         }
-      }
+    }
       let jsonLocalData = await this.writeToJson(contentControlData)
       let jsonData = await this.uploadToMinio(jsonLocalData,this.minioEndPoint,this.jsonFileBucketName)
       this.deleteFile(jsonLocalData)
