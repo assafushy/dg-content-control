@@ -296,6 +296,7 @@ export default class DgContentControls {
         headingLevel,
         includeAttachments
       );
+      console.log(skins, "skins")
       skins.forEach(skin => {
         // Check if skin is of type 'paragraph' and contains the text 'Test Description:'
         if (skin.type === 'paragraph' && skin.runs.some(run => run.text === 'Test Description:')) {
