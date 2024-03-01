@@ -255,6 +255,7 @@ export default class TestDataFactory {
               ],
               level: suite.temp.level
             };
+            console.log("suiteSkinData", suiteSkinData)
             let testCases = await Promise.all(
               suite.testCases.map(async testCase => {
                 let richTextFactory = new RichTextDataFactory(
