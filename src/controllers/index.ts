@@ -279,6 +279,7 @@ export default class DgContentControls {
             return { skin: testCase, suiteSkinData: testData.suiteSkinData };
         });
     });
+      console.log("skinDataWithSuiteInfo", skinDataWithSuiteInfo)
       let skins = await this.skins.addNewContentToDocumentSkin(
         contentControlTitle,
         this.skins.SKIN_TYPE_TEST_PLAN,
@@ -436,6 +437,7 @@ export default class DgContentControls {
     contentControl?: contentControl
   ) {
     let adoptedChangesData;
+    adoptedChangesData
     logger.debug(`fetching data with params:
       repoId:${repoId}
       from:${from}
