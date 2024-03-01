@@ -139,13 +139,14 @@ export default class DgContentControls {
             break;
       }
       if (contentControlData) {
-        for (const wordObject of contentControlData.wordObjects) {
-            // Check if the wordObject is of type 'paragraph' and contains the text 'Test Description:'
-            if (wordObject.type === 'paragraph' && wordObject.runs.some(run => run.text === 'Test Description:')) {
-                continue; // Skip this wordObject
-            }
+        contentControlData.wordObjects = contentControlData.wordObjects.filter(wordObject => {
+            // Keep the wordObject if it is not of type 'paragraph' with the text 'Test Description:'
+            return !(wordObject.type === 'paragraph' && wordObject.runs.some(run => run.text === 'Test Description:'));
+        });
 
-            console.log(wordObject); // Process the wordObject as normal
+        // Process the remaining wordObjects as usual
+        for (const wordObject of contentControlData.wordObjects) {
+            console.log(wordObject); // Process the wordObject
         }
     }
       let jsonLocalData = await this.writeToJson(contentControlData)
