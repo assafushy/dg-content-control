@@ -260,6 +260,10 @@ export default class DgContentControls {
         this.PAT,
       )
       await testDataFactory.fetchTestData();
+      console.log("testDataFactory.adoptedTestData", testDataFactory.adoptedTestData)
+      testDataFactory.adoptedTestData.forEach(item => {
+        console.log("Suite Skin Data1:", item.suiteSkinData);
+      });
     } catch (error) {
       logger.error(`Error initilizing test data factory`);
       console.log(error);
