@@ -370,27 +370,23 @@ export default class TestDataFactory {
                   ];
                 }
 
+                let filteredTestCaseAttachments = testCase.attachmentsData
+                .filter(
+                  attachment =>
+                    !attachment.attachmentComment.includes(`TestStep=`)
+                )
                 let testCaseAttachments = await Promise.all(
-                  testCase.attachmentsData
-                    .filter(
-                      attachment =>
-                        !attachment.attachmentComment.includes(`TestStep=`)
-                    )
+                  filteredTestCaseAttachments
                     .map(async (attachment, i) => {
                       return {
                         fields: [
                           { name: "#", value: i + 1 },
-                          {
-                            name: "attachment name",
-                            value: attachment.attachmentFileName,
-                            url: attachment.attachmentLink,
-                            relativeUrl: attachment.relativeAttachmentLink
-                          }
+                          { name: "Attachments", value: [filteredTestCaseAttachments[i]] }
+                          
                         ]
                       };
                     })
                 );
-
                 let adoptedTestCaseData = {
                   testCaseHeaderSkinData,
                   testCaseStepsSkinData,
