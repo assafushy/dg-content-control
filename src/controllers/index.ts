@@ -283,9 +283,15 @@ export default class DgContentControls {
         includeAttachments
       );
       skins.forEach(skin => {
-        console.log("--------skin-------------", skin)
+        // Check if skin is of type 'paragraph' and contains the text 'Test Description:'
+        if (skin.type === 'paragraph' && skin.runs.some(run => run.text === 'Test Description:')) {
+            console.log("Skipped skin: ", skin);
+            return; // Skip this skin
+        }
+    
+        console.log("--------skin-------------", skin);
         contentControl.wordObjects.push(skin);
-        });
+    });
       return contentControl;
     } catch (error) {
       logger.error(`Error adding content contorl:`);
