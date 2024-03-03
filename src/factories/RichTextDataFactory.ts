@@ -87,6 +87,9 @@ export default class RichTextDataFactory {
           "-----EN-PAR----- -----ST-IMG-----"
         );
         rangesArr.push(deleteTo, deleteTo, "-----EN-IMG----- -----ST-PAR-----");
+      case "font":
+          rangesArr.push(deleteFrom, deleteTo, "");
+        break;
     }
   };
 
