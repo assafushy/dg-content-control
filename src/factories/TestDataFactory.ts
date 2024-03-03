@@ -8,9 +8,9 @@ const styles = {
   isBold: false,
   IsItalic: false,
   IsUnderline: false,
-  Size: 10,
+  Size: 12,
   Uri: null,
-  Font: "New Times Roman",
+  Font: "Arial",
   InsertLineBreak: false,
   InsertSpace: false
 };
@@ -249,7 +249,7 @@ export default class TestDataFactory {
             let suiteSkinData = {
               fields: [
                 { name: "ID", value: suite.temp.id, url: suite.temp.url },
-                { name: "Title", value: suite.temp.name }
+                { name: "Title", value: " - " + suite.temp.name }
               ],
               level: suite.temp.level
             };
@@ -273,7 +273,7 @@ export default class TestDataFactory {
                 let testCaseHeaderSkinData = {
                   fields: [
                     { name: "ID", value: testCase.id, url: testCase.url },
-                    { name: "Title", value: testCase.title },
+                    { name: "Title", value: " - " + testCase.title },
                     {
                       name: "Test Description",
                       value: testCase.description || "No description",

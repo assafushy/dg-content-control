@@ -28,7 +28,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      downloadManagerUrl: "http://download-manager:8000"
+      downloadManagerUrl: "http://python-download-service:8000"
   dg-api-gate:
     image: assafushy/dg-api-gate:latest
     ports:
