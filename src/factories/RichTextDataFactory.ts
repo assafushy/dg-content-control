@@ -25,7 +25,6 @@ export default class RichTextDataFactory {
   replaceTagsTestProcedure = ({ tag, deleteFrom, deleteTo, rangesArr }) => {
     switch (tag.name.toLowerCase()) {
       case `br`:
-          rangesArr.push(deleteFrom, deleteTo, "\n");
          break;
       case `b`: 
         break;
