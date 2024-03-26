@@ -315,8 +315,8 @@ export default class TestDataFactory {
                         let action = richTextFactoryAction.skinDataContentControls[0].data.fields[0].value;
                         let expected = richTextFactoryExpected.skinDataContentControls[0].data.fields[0].value;
                         
-                        let action = action.replace(/\n/, "<BR/>");
-                        let expected = expected.replace(/\n/, "<BR/>");
+                        action = action.replace(/\n/, "<BR/>");
+                        expected = expected.replace(/\n/, "<BR/>");
                         
                         let testStepAttachments = testCase.attachmentsData.filter(
                           attachment => {
