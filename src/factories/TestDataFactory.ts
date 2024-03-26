@@ -301,8 +301,10 @@ export default class TestDataFactory {
                           this.templatePath,
                           this.teamProject
                         );
+
                         await richTextFactoryAction.htmlStrip();
                         await richTextFactoryExpected.htmlStrip();
+
                         // Define target values
                         const targetValues = ['\n', ' ', ''];
 
@@ -312,8 +314,16 @@ export default class TestDataFactory {
                           // Skip this iteration and move to the next one
                           return null;
                         }
+                        console.log("----------------richTextFactoryAction before -----------:",richTextFactoryAction)
+                        console.log("----------------richTextFactoryExpected before-----------:",richTextFactoryExpected)
+ 
                         let action = richTextFactoryAction.skinDataContentControls[0].data.fields[0].value;
                         let expected = richTextFactoryExpected.skinDataContentControls[0].data.fields[0].value;
+
+                        action = action.replace(/\n/g, "<BR/>");
+                        expected = action.replace(/\n/g, "<BR/>");
+
+
                         let testStepAttachments = testCase.attachmentsData.filter(
                           attachment => {
                             return attachment.attachmentComment.includes(
