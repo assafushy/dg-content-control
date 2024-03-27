@@ -28,6 +28,7 @@ export default class AttachmentsDataFactory {
         this.teamProject,
         this.wiId
       );
+      console.log("attachments attachmentdatafactory", attachments)
     } catch (e) {
       attachments = [];
     }
