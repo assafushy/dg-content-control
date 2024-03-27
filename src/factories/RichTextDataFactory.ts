@@ -22,10 +22,10 @@ export default class RichTextDataFactory {
     await this.downloadImages(attachmentsBucketName, minioEndPoint, minioAccessKey, minioSecretKey, PAT);
   }
 
-  replaceTagsTestProcedure = ({ tag, deleteFrom, deleteTo, rangesArr }) => {
+  replaceTags = ({ tag, deleteFrom, deleteTo, rangesArr }) => {
     switch (tag.name.toLowerCase()) {
       case `br`:
-         break;
+        break;
       case `b`: 
         break;
       case `u`:
@@ -72,38 +72,15 @@ export default class RichTextDataFactory {
       case `li`:
         break;
       default:
-          rangesArr.push(deleteFrom, deleteTo, " ");
-        break;
-    }
-  };
-
-  replaceTagsTestDescription = ({ tag, deleteFrom, deleteTo, rangesArr }) => {
-    switch (tag.name.toLowerCase()) {
-      case "img":
-        rangesArr.push(
-          deleteFrom,
-          deleteFrom,
-          "-----EN-PAR----- -----ST-IMG-----"
-        );
-        rangesArr.push(deleteTo, deleteTo, "-----EN-IMG----- -----ST-PAR-----");
-      case "font":
-          rangesArr.push(deleteFrom, deleteTo, "");
+        rangesArr.push(deleteFrom, deleteTo, " ");
         break;
     }
   };
 
   async htmlStrip() {
-    const containsDivTag = /<div>/.test(this.richTextString);
-      if (!containsDivTag) {
-        this.stripedString = striphtml(this.richTextString, {
-          cb: this.replaceTagsTestProcedure,
-          }).result;      
-        }      
-      else {
-        this.stripedString = striphtml(this.richTextString, {
-          cb: this.replaceTagsTestDescription,
-          }).result;   
-        }
+    this.stripedString = striphtml(this.richTextString, {
+      cb: this.replaceTags,
+    }).result;
     this.stripedString = "-----ST-PAR-----" + this.stripedString;
     this.stripedStringParser();
     this.contentControlsStrings.forEach((contentControl) => {
