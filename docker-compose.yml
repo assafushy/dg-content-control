@@ -22,6 +22,9 @@ services:
       MINIOROOTPASSWORD: "your-root-password"
   dg-content-control:
     build: .
+    command: npm run start
+    volumes:
+      - ./:/usr/src/app
     ports:
       - "3000:3000"
     environment:
