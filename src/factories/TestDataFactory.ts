@@ -387,6 +387,7 @@ export default class TestDataFactory {
                   filteredTestCaseAttachments
                     .map(async (attachment, i) => {
                       return {
+                        test: filteredTestCaseAttachments[i],
                         fields: [
                           { name: "#", value: i + 1 },
                           { name: "Attachments", value: [filteredTestCaseAttachments[i]] }
