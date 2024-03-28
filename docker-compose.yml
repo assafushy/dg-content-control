@@ -11,7 +11,7 @@ services:
     ports:
       - "80:80"
     environment:
-      BACKEND-URL-PLACEHOLDER-ContentControl: "http://dg-api-gate:3001"
+      BACKEND-URL-PLACEHOLDER-ContentControl: "http://dg-api-gate:30001"
   dg-init-job:
     image: assafushy/dg-initializer:latest
     depends_on:
