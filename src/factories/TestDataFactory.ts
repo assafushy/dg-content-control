@@ -301,10 +301,8 @@ export default class TestDataFactory {
                           this.templatePath,
                           this.teamProject
                         );
-
                         await richTextFactoryAction.htmlStrip();
                         await richTextFactoryExpected.htmlStrip();
-
                         // Define target values
                         const targetValues = ['\n', ' ', ''];
 
@@ -387,7 +385,6 @@ export default class TestDataFactory {
                   filteredTestCaseAttachments
                     .map(async (attachment, i) => {
                       return {
-                        test: filteredTestCaseAttachments[i],
                         fields: [
                           { name: "#", value: i + 1 },
                           { name: "Attachments", value: [filteredTestCaseAttachments[i]] }
