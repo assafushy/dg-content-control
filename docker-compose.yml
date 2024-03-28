@@ -11,7 +11,7 @@ services:
     ports:
       - "80:80"
     environment:
-      BACKEND-URL-PLACEHOLDER-ContentControl: "http://dg-api-gate:3001"
+      BACKEND-URL-PLACEHOLDER-ContentControl: "http://dg-api-gate:30001"
   dg-init-job:
     image: assafushy/dg-initializer:latest
     depends_on:
@@ -28,15 +28,15 @@ services:
     ports:
       - "3000:3000"
     environment:
-      downloadManagerUrl: "http://download-manager:8000"
+      downloadManagerUrl: "http://python-download-service:8000"
   dg-api-gate:
     image: assafushy/dg-api-gate:latest
     ports:
-      - "3001:3000"
+      - "30001:3000"
     environment:
       <<: *common-vars
       MINIO_ENDPOINT: "s3"
-      dgContentControlUrl: "http://dg-content-control:3000"
+      dgContentControlUrl: "http://python-download-service:3000"
       jsonToWordPostUrl: "http://json-to-word:5000"
       minioPublicEndPoint: "http://localhost:9000" #change with hosted machine hostname
   json-to-word:
