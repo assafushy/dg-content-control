@@ -15,9 +15,9 @@ let styles = {
   isBold: false,
   IsItalic: false,
   IsUnderline: false,
-  Size: 10,
+  Size: 12,
   Uri: null,
-  Font: "New Times Roman",
+  Font: "Arial",
   InsertLineBreak: false,
   InsertSpace: false,
 };
@@ -126,7 +126,8 @@ export default class DgContentControls {
             contentControlOptions.data.linkTypeFilterArray,
             contentControlOptions.title,
             contentControlOptions.headingLevel,
-            contentControlOptions.data.branchName
+            contentControlOptions.data.branchName,
+            contentControlOptions.data.includePullRequests
           );
           break;
           case "pr-change-description-table":
@@ -273,6 +274,10 @@ export default class DgContentControls {
         includeAttachments
       );
       skins.forEach(skin => {
+        // Check if skin is of type 'paragraph' and contains the text 'Test Description:'
+        if (skin.type === 'paragraph' && skin.runs.some(run => run.text === 'Test Description:')) {
+            return; // Skip this skin
+    }
         contentControl.wordObjects.push(skin);
         });
       return contentControl;
@@ -407,6 +412,7 @@ export default class DgContentControls {
     contentControlTitle: string,
     headingLevel?: number,
     branchName?: string,
+    includePullRequests?: boolean,
     contentControl?: contentControl
   ) {
     
@@ -418,7 +424,8 @@ export default class DgContentControls {
       rangeType: ${rangeType}
       linkTypeFilterArray:${linkTypeFilterArray}
       teamProjectName:${this.teamProjectName}
-      branchName:${branchName}`);
+      branchName:${branchName}
+      includePullRequests:${includePullRequests}`)
 
     try {
       let changeDataFactory = new ChangeDataFactory(
@@ -429,6 +436,7 @@ export default class DgContentControls {
         rangeType,
         linkTypeFilterArray,
         branchName,
+        includePullRequests,
         this.dgDataProviderAzureDevOps
       );
       await changeDataFactory.fetchData();
