@@ -248,8 +248,8 @@ export default class TestDataFactory {
           this.testDataRaw.suites.map(async (suite: any) => {
             let suiteSkinData = {
               fields: [
-                { name: "ID", value: suite.temp.id, url: suite.temp.url },
-                { name: "Title", value: " - " + suite.temp.name }
+                { name: "Title", value: suite.temp.name + " - " },
+                { name: "ID", value: suite.temp.id, url: suite.temp.url }
               ],
               level: suite.temp.level
             };
@@ -272,8 +272,8 @@ export default class TestDataFactory {
                 let richText = richTextFactory.skinDataContentControls;
                 let testCaseHeaderSkinData = {
                   fields: [
+                    { name: "Title", value: testCase.title + " - " },
                     { name: "ID", value: testCase.id, url: testCase.url },
-                    { name: "Title", value: " - " + testCase.title },
                     {
                       name: "Test Description",
                       value: testCase.description || "No description",
