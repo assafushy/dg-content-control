@@ -6,9 +6,9 @@ const styles = {
   isBold: false,
   IsItalic: false,
   IsUnderline: false,
-  Size: 10,
+  Size: 12,
   Uri: null,
-  Font: "New Times Roman",
+  Font: "Arial",
   InsertLineBreak: false,
   InsertSpace: false,
 };
@@ -29,6 +29,7 @@ export default class ChangeDataFactory {
   rawChangesArray: any = [];
   adoptedChangeData: any;
   branchName: string;
+  includePullRequests: boolean;
 
   constructor(
     teamProjectName,
@@ -38,6 +39,7 @@ export default class ChangeDataFactory {
     rangeType: string,
     linkTypeFilterArray: string[],
     branchName: string,
+    includePullRequests: boolean,
     dgDataProvider: any
   ) {
     this.dgDataProviderAzureDevOps = dgDataProvider;
@@ -48,12 +50,15 @@ export default class ChangeDataFactory {
     this.rangeType = rangeType;
     this.linkTypeFilterArray = linkTypeFilterArray;
     this.branchName = branchName;
+    this.includePullRequests = includePullRequests;
+
   } //constructor
 
   /*fetches Change table data and adopts it to json skin format */
   async fetchData() {
     let focusedArtifact;
     let artifactChanges;
+    let origin;
     let gitDataProvider =
       await this.dgDataProviderAzureDevOps.getGitDataProvider();
     let pipelinesDataProvider =
@@ -88,16 +93,27 @@ export default class ChangeDataFactory {
           this.branchName
           );
         
-        artifactChanges = await gitDataProvider.GetItemsInCommitRange(
-          this.teamProject,
-          this.repoId,
-          commitsInDateRange
-        );
-        this.rawChangesArray.push({
-          artifact: focusedArtifact,
-          changes: artifactChanges,
-        });
-        break;
+          if (this.includePullRequests) {
+            console.log(this.includePullRequests)
+            artifactChanges = await gitDataProvider.GetPullRequestsInCommitRangeWithoutLinkedItems(
+              this.teamProject,
+              this.repoId,
+              commitsInDateRange
+            );
+          } else {
+            console.log(this.includePullRequests)
+            artifactChanges = await gitDataProvider.GetItemsInCommitRange(
+              this.teamProject,
+              this.repoId,
+              commitsInDateRange
+            );
+          }
+          this.rawChangesArray.push({
+            artifact: focusedArtifact,
+            changes: artifactChanges,
+          });
+          break;
+
       case "pipeline":
         focusedArtifact = await pipelinesDataProvider.getPipelineFromPipelineId(
           this.teamProject,
@@ -150,6 +166,7 @@ export default class ChangeDataFactory {
                   "pipeline",
                   null,
                   "", // You can provide the appropriate branch name here or an empty string if not applicable
+                  true,
                   this.dgDataProviderAzureDevOps
                 );
                 

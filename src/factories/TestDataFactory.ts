@@ -8,9 +8,9 @@ const styles = {
   isBold: false,
   IsItalic: false,
   IsUnderline: false,
-  Size: 10,
+  Size: 12,
   Uri: null,
-  Font: "New Times Roman",
+  Font: "Arial",
   InsertLineBreak: false,
   InsertSpace: false
 };
@@ -65,12 +65,12 @@ export default class TestDataFactory {
     this.attachmentsBucketName = attachmentsBucketName
   }
   async fetchTestData() {
-    let filteredPlan;
+    let testfilteredPlan;
     let testDataProvider = await this.dgDataProvider.getTestDataProvider();
     let projectTestPlans: any = await testDataProvider.GetTestPlans(
       this.teamProject
     );
-    filteredPlan = projectTestPlans.value.filter(testPlan => {
+    testfilteredPlan = projectTestPlans.value.filter(testPlan => {
       return testPlan.id === this.testPlanId;
     });
     let testSuites: any[] = await testDataProvider.GetTestSuitesByPlan(
@@ -120,7 +120,7 @@ export default class TestDataFactory {
         }
 
         this.testDataRaw = {
-          plan: filteredPlan,
+          plan: testfilteredPlan,
           suites: SuitesAndTestCases
         };
         this.adoptedTestData = await this.jsonSkinDataAdpater(null);
@@ -237,28 +237,27 @@ export default class TestDataFactory {
   //arranging the test data for json skins package
   async jsonSkinDataAdpater(adapterType: string = null) {
     let adoptedTestData;
+  
     switch (adapterType) {
       case "test-result-group-summary":
         let testResultGroupSummaryDataSkinAdapter = new TestResultGroupSummaryDataSkinAdapter();
-        adoptedTestData = await testResultGroupSummaryDataSkinAdapter.jsonSkinDataAdpater(
-          this.testDataRaw
-        );
+        adoptedTestData = await testResultGroupSummaryDataSkinAdapter.jsonSkinDataAdpater(this.testDataRaw);
         break;
       default:
-        //!TODO - str data -- currently only std data supported
         adoptedTestData = await Promise.all(
           this.testDataRaw.suites.map(async (suite: any) => {
             let suiteSkinData = {
               fields: [
-                { name: "ID", value: suite.temp.id, url: suite.temp.url },
-                { name: "Title", value: suite.temp.name }
+                { name: "Title", value: suite.temp.name + " - " },
+                { name: "ID", value: suite.temp.id, url: suite.temp.url }
               ],
               level: suite.temp.level
             };
             let testCases = await Promise.all(
               suite.testCases.map(async testCase => {
+                let Description = testCase.description || "No description";
                 let richTextFactory = new RichTextDataFactory(
-                  testCase.description || "No description",
+                  Description,
                   this.templatePath,
                   this.teamProject
                 );
@@ -273,8 +272,8 @@ export default class TestDataFactory {
                 let richText = richTextFactory.skinDataContentControls;
                 let testCaseHeaderSkinData = {
                   fields: [
+                    { name: "Title", value: testCase.title + " - " },
                     { name: "ID", value: testCase.id, url: testCase.url },
-                    { name: "Title", value: testCase.title },
                     {
                       name: "Test Description",
                       value: testCase.description || "No description",
@@ -283,7 +282,11 @@ export default class TestDataFactory {
                   ],
                   level: suite.temp.level + 1
                 };
+                // Helper function to check if all the values in the array are among the target values
                 let testCaseStepsSkinData;
+                function allValuesAreTarget(array, targetValues) {
+                  return array.every(obj => targetValues.includes(obj.value));
+                }
                 try {
                   if (testCase.steps) {
                     testCaseStepsSkinData = await Promise.all(
@@ -292,17 +295,29 @@ export default class TestDataFactory {
                           testStep.action || "",
                           this.templatePath,
                           this.teamProject
-                        )
+                        );
                         let richTextFactoryExpected = new RichTextDataFactory(
                           testStep.expected || "",
                           this.templatePath,
                           this.teamProject
-                        )
+                        );
                         await richTextFactoryAction.htmlStrip();
                         await richTextFactoryExpected.htmlStrip();
+                        // Define target values
+                        const targetValues = ['\n', ' ', ''];
+
+                        // Check if all values in both arrays are among the target values
+                        if (allValuesAreTarget(richTextFactoryAction.contentControlsStrings, targetValues) &&
+                            allValuesAreTarget(richTextFactoryExpected.contentControlsStrings, targetValues)) {
+                          // Skip this iteration and move to the next one
+                          return null;
+                        }
                         let action = richTextFactoryAction.skinDataContentControls[0].data.fields[0].value;
                         let expected = richTextFactoryExpected.skinDataContentControls[0].data.fields[0].value;
-                        //filltering step attachments to array for the table column
+                        
+                        action = action.replace(/\n/g, "<BR/>");
+                        expected = expected.replace(/\n/g, "<BR/>");
+
                         let testStepAttachments = testCase.attachmentsData.filter(
                           attachment => {
                             return attachment.attachmentComment.includes(
@@ -337,6 +352,8 @@ export default class TestDataFactory {
                             };
                       })
                     );
+                    // Filter out null entries (those iterations that were skipped)
+                    testCaseStepsSkinData = testCaseStepsSkinData.filter((entry) => entry !== null);
                   }
                 } catch (err) {
                   logger.warn(
@@ -357,27 +374,23 @@ export default class TestDataFactory {
                   ];
                 }
 
+                let filteredTestCaseAttachments = testCase.attachmentsData
+                .filter(
+                  attachment =>
+                    !attachment.attachmentComment.includes(`TestStep=`)
+                )
                 let testCaseAttachments = await Promise.all(
-                  testCase.attachmentsData
-                    .filter(
-                      attachment =>
-                        !attachment.attachmentComment.includes(`TestStep=`)
-                    )
+                  filteredTestCaseAttachments
                     .map(async (attachment, i) => {
                       return {
                         fields: [
                           { name: "#", value: i + 1 },
-                          {
-                            name: "attachment name",
-                            value: attachment.attachmentFileName,
-                            url: attachment.attachmentLink,
-                            relativeUrl: attachment.relativeAttachmentLink
-                          }
+                          { name: "Attachments", value: [filteredTestCaseAttachments[i]] }
+                          
                         ]
                       };
                     })
                 );
-
                 let adoptedTestCaseData = {
                   testCaseHeaderSkinData,
                   testCaseStepsSkinData,
