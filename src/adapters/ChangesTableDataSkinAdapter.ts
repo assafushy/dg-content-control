@@ -4,23 +4,19 @@ import { writeFileSync } from "fs";
 export default class ChangesTableDataSkinAdapter {
   rawChangesArray: any = [];
   adoptedData: any = [];
-  constructor(rawChangesArray) {
+
+  constructor(rawChangesArray: any[]) {
     this.rawChangesArray = rawChangesArray;
+    console.log('Constructor: Initialized ChangesTableDataSkinAdapter with rawChangesArray', rawChangesArray);
   }
+
   getAdoptedData() {
+    console.log('getAdoptedData: Returning adopted data', this.adoptedData);
     return this.adoptedData;
   }
-  /*
-  table structure:
-  Col1: # (Row number). 
-  Col2: Change# (the ID of the change from GIT / TFS) 
-  Col3: Related WI -   Req/ CR/ Task/ Bug   - The data is WI Type and WI ID. Each ID in separate row.
-  Col4: Change description / WI description or Title  - according to configuration 
-  Option – the user that made the change. 
-  Col5: Committed Date & Time. 
-  TBD – Linked WI 
-  */
+
   async adoptSkinData() {
+    console.log('adoptSkinData: Started adopting skin data');
     let i = 0;
     this.rawChangesArray.forEach((artifact) => {
       let artifactTitle: any = [
@@ -30,69 +26,79 @@ export default class ChangesTableDataSkinAdapter {
       ];
       let artifactChanges: any = [];
       artifact.changes.forEach((change) => {
-        let changeTableRow = {
-          fields: [
-            { name: "#", value: i + 1 },
-            {
-              name: "Change #",
-              value: "commit sha / pr id",
-              url: null,
-            },
-            {
-              name: "Related WI", 
-              value: `${change.workItem.fields["System.Title"]} - ${change.workItem.fields["System.WorkItemType"]} ${change.workItem.id}`,
-              url: change.workItem._links.html.href
-            },
-            {
-              name: "Change description",
-              value: change.workItem.fields["System.Description"],
-            },
-            { name: "Committed Date & Time", value: "date time" },
-            { name: "Commited by", value: "commited by" },
-          ],
-        };
+        let changeTableRow;
+        if (change.workItem) {
+          changeTableRow = {
+            fields: [
+              { name: "#", value: i + 1 },
+              {
+                name: "Change #",
+                value: "commit sha / pr id",
+                url: null,
+              },
+              {
+                name: "Related WI",
+                value: `${change.workItem.fields["System.Title"]} - ${change.workItem.fields["System.WorkItemType"]} ${change.workItem.id}`,
+                url: change.workItem._links.html.href,
+              },
+              {
+                name: "Change description",
+                value: change.workItem.fields["System.Description"],
+              },
+              { name: "Committed Date & Time", value: "date time" },
+              { name: "Commited by", value: "commited by" },
+            ],
+          };
+        } else //if include Pull Requests is True
+        {
+          changeTableRow = {
+            fields: [
+              { name: "#", value: i + 1 },
+              {
+                name: "Pull Request Title",
+                value: change.title,
+              },
+              {
+                name: "Pull Request Description",
+                value: change.description,
+              },
+              { name: "Creation date", value: change.creationDate },
+              { name: "Created by", value: change.createdBy },
+            ],
+          };
+        }
+
         if (change.build) {
-          //Change#
           changeTableRow.fields[1].value = change.build;
           changeTableRow.fields[1].url = change.workItem.url;
-          //Commited time
-          changeTableRow.fields[4].value =
-            change.workItem.fields["Microsoft.VSTS.Common.ClosedDate"] ||
-            "This item has'nt been Closed yet";
-          //commited by
-          changeTableRow.fields[5].value = change.workItem.fields[
-            "Microsoft.VSTS.Common.ClosedBy"
-          ]
-            ? change.workItem.fields["Microsoft.VSTS.Common.ClosedBy"]
-                .displayName
-            : "This item has'nt been Closed yet";
+          changeTableRow.fields[4].value = change.workItem.fields["Microsoft.VSTS.Common.ClosedDate"] || "This item hasn't been Closed yet";
+          changeTableRow.fields[5].value = change.workItem.fields["Microsoft.VSTS.Common.ClosedBy"] ? change.workItem.fields["Microsoft.VSTS.Common.ClosedBy"].displayName : "This item hasn't been Closed yet";
         }
+
         if (change.pullrequest) {
-          //Change#
-          changeTableRow.fields[1].value = change.pullrequest.pullRequestId;
+          changeTableRow.fields[1].value = change.pullrequest.description;
           changeTableRow.fields[1].url = change.pullrequest.url;
-          //Commited time
           changeTableRow.fields[4].value = change.pullrequest.closedDate;
-          //commited by
-          changeTableRow.fields[5].value =
-            change.pullrequest.createdBy.displayName;
+          changeTableRow.fields[5].value = change.pullrequest.createdBy.displayName;
         }
+
         if (change.commit) {
-          //Change#
           changeTableRow.fields[1].value = change.commit.commitId.substring(0, 5);
           changeTableRow.fields[1].url = change.commit.remoteUrl;
-          //Commited time
           changeTableRow.fields[4].value = change.commit.author.date;
-          //commited by
           changeTableRow.fields[5].value = change.commit.committer.name;
         }
+
         artifactChanges.push(changeTableRow);
         i++;
       });
+
       this.adoptedData.push({
         artifact: artifactTitle,
         artifactChanges: artifactChanges,
       });
     });
+
+    console.log('adoptSkinData: Completed adopting skin data', this.adoptedData);
   }
 }

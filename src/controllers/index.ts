@@ -15,9 +15,9 @@ let styles = {
   isBold: false,
   IsItalic: false,
   IsUnderline: false,
-  Size: 10,
+  Size: 12,
   Uri: null,
-  Font: "New Times Roman",
+  Font: "Arial",
   InsertLineBreak: false,
   InsertSpace: false,
 };
@@ -125,7 +125,9 @@ export default class DgContentControls {
             contentControlOptions.data.rangeType,
             contentControlOptions.data.linkTypeFilterArray,
             contentControlOptions.title,
-            contentControlOptions.headingLevel
+            contentControlOptions.headingLevel,
+            contentControlOptions.data.branchName,
+            contentControlOptions.data.includePullRequests
           );
           break;
           case "pr-change-description-table":
@@ -272,6 +274,10 @@ export default class DgContentControls {
         includeAttachments
       );
       skins.forEach(skin => {
+        // Check if skin is of type 'paragraph' and contains the text 'Test Description:'
+        if (skin.type === 'paragraph' && skin.runs.some(run => run.text === 'Test Description:')) {
+            return; // Skip this skin
+    }
         contentControl.wordObjects.push(skin);
         });
       return contentControl;
@@ -405,16 +411,21 @@ export default class DgContentControls {
     linkTypeFilterArray: string[],
     contentControlTitle: string,
     headingLevel?: number,
+    branchName?: string,
+    includePullRequests?: boolean,
     contentControl?: contentControl
   ) {
+    
     let adoptedChangesData;
     logger.debug(`fetching data with params:
       repoId:${repoId}
       from:${from}
       to:${to}
-      rangeType: ${rangeType},
+      rangeType: ${rangeType}
       linkTypeFilterArray:${linkTypeFilterArray}
-      teamProjectName:${this.teamProjectName}`);
+      teamProjectName:${this.teamProjectName}
+      branchName:${branchName}
+      includePullRequests:${includePullRequests}`)
 
     try {
       let changeDataFactory = new ChangeDataFactory(
@@ -424,6 +435,8 @@ export default class DgContentControls {
         to,
         rangeType,
         linkTypeFilterArray,
+        branchName,
+        includePullRequests,
         this.dgDataProviderAzureDevOps
       );
       await changeDataFactory.fetchData();
