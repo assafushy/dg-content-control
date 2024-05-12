@@ -25,6 +25,8 @@ export default class TestDataFactory {
   adoptedTestData: any;
   templatePath: string;
   includeAttachments: boolean;
+  includeRequirements: boolean;
+  includeCustomerId: boolean;
   includeTestResults: boolean;
   minioEndPoint: string;
   minioAccessKey: string;
@@ -39,6 +41,8 @@ export default class TestDataFactory {
     testPlanId: number = null,
     testSuiteArray: number[] = null,
     includeAttachments: boolean = true,
+    includeRequirements: boolean = false,
+    includeCustomerId: boolean = false,
     includeTestResults: boolean = false,
     dgDataProvider: any,
     templatePath = "",
@@ -51,6 +55,8 @@ export default class TestDataFactory {
     this.testPlanId = testPlanId;
     this.testSuiteArray = testSuiteArray;
     this.includeAttachments = includeAttachments;
+    this.includeRequirements = includeRequirements
+    this.includeCustomerId = includeCustomerId
     this.dgDataProvider = dgDataProvider;
     this.templatePath = templatePath;
     this.includeTestResults = includeTestResults;
@@ -65,6 +71,7 @@ export default class TestDataFactory {
     this.attachmentsBucketName = attachmentsBucketName
   }
   async fetchTestData() {
+
     let testfilteredPlan;
     let testDataProvider = await this.dgDataProvider.getTestDataProvider();
     let projectTestPlans: any = await testDataProvider.GetTestPlans(
@@ -94,7 +101,9 @@ export default class TestDataFactory {
         this.teamProject,
         `${this.testPlanId}`,
         `${this.testPlanId + 1}`,
-        true
+        true,
+        this.includeRequirements,
+        this.includeCustomerId
       );
 
       logger.debug(
@@ -248,7 +257,7 @@ export default class TestDataFactory {
           this.testDataRaw.suites.map(async (suite: any) => {
             let suiteSkinData = {
               fields: [
-                { name: "Title", value: suite.temp.name + " - " },
+                { name: " Title", value: suite.temp.name + " - " },
                 { name: "ID", value: suite.temp.id, url: suite.temp.url }
               ],
               level: suite.temp.level
@@ -272,7 +281,7 @@ export default class TestDataFactory {
                 let richText = richTextFactory.skinDataContentControls;
                 let testCaseHeaderSkinData = {
                   fields: [
-                    { name: "Title", value: testCase.title + " - " },
+                    { name: " Title", value: testCase.title + " - " },
                     { name: "ID", value: testCase.id, url: testCase.url },
                     {
                       name: "Test Description",
@@ -373,19 +382,37 @@ export default class TestDataFactory {
                     }
                   ];
                 }
-
                 let filteredTestCaseAttachments = testCase.attachmentsData
                 .filter(
                   attachment =>
                     !attachment.attachmentComment.includes(`TestStep=`)
                 )
+                let testCaseAttachments2 = await Promise.all(
+                  filteredTestCaseAttachments
+                    .map(async (attachment, i) => {
+                      return {
+                        fields: [
+                          { name: "idtestattachment2", value: i + 1 },
+                          { name: "testattachment2", value: testCase.relationurl }
+                          
+                        ]
+                      };
+                    })
+                );
+                testCaseAttachments2.forEach((attachment) => {
+                  // Find the field with the name 'Attachments' and print its value
+                  let attachmentsField = attachment.fields.find(field => field.name === 'Attachments');
+                  if (attachmentsField && attachmentsField.value) {
+                  }
+                });
+
                 let testCaseAttachments = await Promise.all(
                   filteredTestCaseAttachments
                     .map(async (attachment, i) => {
                       return {
                         fields: [
-                          { name: "#", value: i + 1 },
-                          { name: "Attachments", value: [filteredTestCaseAttachments[i]] }
+                          { name: "idtestattachment1", value: i + 1 },
+                          { name: "testattachment1", value: [filteredTestCaseAttachments[i]] }
                           
                         ]
                       };
@@ -394,7 +421,8 @@ export default class TestDataFactory {
                 let adoptedTestCaseData = {
                   testCaseHeaderSkinData,
                   testCaseStepsSkinData,
-                  testCaseAttachments
+                  testCaseAttachments,
+                  testCaseAttachments2
                 };
                 return adoptedTestCaseData;
               })
