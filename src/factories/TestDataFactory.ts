@@ -382,27 +382,32 @@ export default class TestDataFactory {
                     }
                   ];
                 }
+                console.log("///////////////////testCase////////////////////////")
+                console.log(JSON.stringify(testCase, null, 2));
+                let relationIds = "test"
+              if (testCase.relations && testCase.relations.length > 0) {
+                let relationIds = testCase.relations.map(relation => relation.id);
+                console.log("......relationIds.........", relationIds[0])
                 let filteredTestCaseAttachments = testCase.attachmentsData
                 .filter(
                   attachment =>
                     !attachment.attachmentComment.includes(`TestStep=`)
                 )
                 let testCaseAttachments2 = await Promise.all(
-                  filteredTestCaseAttachments
-                    .map(async (attachment, i) => {
+                  filteredTestCaseAttachments.map(async (attachment, i) => {
                       return {
-                        fields: [
-                          { name: "idtestattachment2", value: i + 1 },
-                          { name: "testattachment2", value: testCase.relationurl }
-                          
-                        ]
+                          fields: [
+                              { name: "idtestattachment2", value: i + 1 },
+                              { name: "testCase.relations.ids", value: relationIds[0] }  // Now only ids are included
+                          ]
                       };
-                    })
-                );
+                  })
+              );
                 testCaseAttachments2.forEach((attachment) => {
                   // Find the field with the name 'Attachments' and print its value
                   let attachmentsField = attachment.fields.find(field => field.name === 'Attachments');
                   if (attachmentsField && attachmentsField.value) {
+                   // console.log("attachmentsField.value",attachmentsField.value);
                   }
                 });
 
@@ -436,6 +441,7 @@ export default class TestDataFactory {
         return adoptedTestData;
         break;
     }
+
     return adoptedTestData;
   }
 
