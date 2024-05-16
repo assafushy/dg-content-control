@@ -281,9 +281,6 @@ export default class DgContentControls {
       logger.debug(JSON.stringify(headingLevel));
       let attachmentData = await testDataFactory.getAttachmentMinioData();
       this.minioAttachmentData = this.minioAttachmentData.concat(attachmentData)
-      //console.log("testDataFactory.adoptedTestData:")
-      //console.log("this.skins.SKIN_TYPE_TEST_PLAN", this.skins.SKIN_TYPE_TEST_PLAN)
-      //console.log(JSON.stringify(testDataFactory.adoptedTestData, null, 2));
       let skins = await this.skins.addNewContentToDocumentSkin(
         contentControlTitle,
         this.skins.SKIN_TYPE_TEST_PLAN,
@@ -292,16 +289,12 @@ export default class DgContentControls {
         headingLevel,
         includeAttachments
       );
-      //console.log("_________________skin_______________:")
-      //console.log(JSON.stringify(skins, null, 2));
-      //console.log("_________________skin_______________:", skins)
+
       skins.forEach(skin => {
         // Check if skin is of type 'paragraph' and contains the text 'Test Description:'
         if (skin.type === 'paragraph' && skin.runs.some(run => run.text === 'Test Description:')) {
             return; // Skip this skin
     }
-        //console.log("_________________skin_______________:")
-        //console.log(JSON.stringify(skin, null, 2));
         contentControl.wordObjects.push(skin);
         });
       return contentControl;
