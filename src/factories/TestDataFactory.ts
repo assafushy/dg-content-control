@@ -71,7 +71,6 @@ export default class TestDataFactory {
     this.attachmentsBucketName = attachmentsBucketName
   }
   async fetchTestData() {
-
     let testfilteredPlan;
     let testDataProvider = await this.dgDataProvider.getTestDataProvider();
     let projectTestPlans: any = await testDataProvider.GetTestPlans(
@@ -257,7 +256,7 @@ export default class TestDataFactory {
           this.testDataRaw.suites.map(async (suite: any) => {
             let suiteSkinData = {
               fields: [
-                { name: " Title", value: suite.temp.name + " - " },
+                { name: "Title", value: suite.temp.name + " - " },
                 { name: "ID", value: suite.temp.id, url: suite.temp.url }
               ],
               level: suite.temp.level
@@ -270,6 +269,7 @@ export default class TestDataFactory {
                   this.templatePath,
                   this.teamProject
                 );
+
                 await richTextFactory.createRichTextContent(this.attachmentsBucketName, this.minioEndPoint, this.minioAccessKey, this.minioSecretKey, this.PAT);
                 richTextFactory.attachmentMinioData.forEach(item => {
                   let attachmentBucketData = {
@@ -281,7 +281,7 @@ export default class TestDataFactory {
                 let richText = richTextFactory.skinDataContentControls;
                 let testCaseHeaderSkinData = {
                   fields: [
-                    { name: " Title", value: testCase.title + " - " },
+                    { name: "Title", value: testCase.title + " - " },
                     { name: "ID", value: testCase.id, url: testCase.url },
                     {
                       name: "Test Description",
@@ -334,6 +334,7 @@ export default class TestDataFactory {
                             );
                           }
                         );
+
                         return this.includeAttachments
                           ? {
                               fields: [
@@ -382,42 +383,46 @@ export default class TestDataFactory {
                     }
                   ];
                 }
-                console.log("///////////////////testCase////////////////////////")
-                console.log(JSON.stringify(testCase, null, 2));
-                let relationIds = "test"
-              if (testCase.relations && testCase.relations.length > 0) {
-                let relationIds = testCase.relations.map(relation => relation.id);
-                console.log("......relationIds.........", relationIds[0])
+                let testCaseRequirements = testCase.relations.map((relation, index) => {
+                  // Start with the basic fields
+                  let fields = [
+                      {
+                          name: "#",
+                          value: index + 1
+                      },
+                      {
+                          name: "Req ID",
+                          value: relation.id
+                      },
+                      {
+                          name: "Req Title",
+                          value: relation.title
+                      }
+                  ];
+                  // Conditionally add customerId if includeCustomerId is true
+                  if (this.includeCustomerId && relation.customerId) {
+                      fields.push({
+                          name: "Customer Req ID",
+                          value: relation.customerId
+                      });
+                  }
+              
+                  return { fields };
+              });
+
+              
                 let filteredTestCaseAttachments = testCase.attachmentsData
                 .filter(
                   attachment =>
                     !attachment.attachmentComment.includes(`TestStep=`)
                 )
-                let testCaseAttachments2 = await Promise.all(
-                  filteredTestCaseAttachments.map(async (attachment, i) => {
-                      return {
-                          fields: [
-                              { name: "idtestattachment2", value: i + 1 },
-                              { name: "testCase.relations.ids", value: relationIds[0] }  // Now only ids are included
-                          ]
-                      };
-                  })
-              );
-                testCaseAttachments2.forEach((attachment) => {
-                  // Find the field with the name 'Attachments' and print its value
-                  let attachmentsField = attachment.fields.find(field => field.name === 'Attachments');
-                  if (attachmentsField && attachmentsField.value) {
-                   // console.log("attachmentsField.value",attachmentsField.value);
-                  }
-                });
-
                 let testCaseAttachments = await Promise.all(
                   filteredTestCaseAttachments
                     .map(async (attachment, i) => {
                       return {
                         fields: [
-                          { name: "idtestattachment1", value: i + 1 },
-                          { name: "testattachment1", value: [filteredTestCaseAttachments[i]] }
+                          { name: "#", value: i + 1 },
+                          { name: "Attachments", value: [filteredTestCaseAttachments[i]] }
                           
                         ]
                       };
@@ -426,8 +431,8 @@ export default class TestDataFactory {
                 let adoptedTestCaseData = {
                   testCaseHeaderSkinData,
                   testCaseStepsSkinData,
-                  testCaseAttachments,
-                  testCaseAttachments2
+                  testCaseAttachments, 
+                  testCaseRequirements
                 };
                 return adoptedTestCaseData;
               })
@@ -441,7 +446,6 @@ export default class TestDataFactory {
         return adoptedTestData;
         break;
     }
-
     return adoptedTestData;
   }
 
