@@ -1,5 +1,5 @@
-import Skins from "@doc-gen/dg-skins";
-import DgDataProviderAzureDevOps from "@doc-gen/dg-data-provider-azuredevops";
+import Skins from "@elisra-devops/docgen-skins";
+import DgDataProviderAzureDevOps from "@elisra-devops/docgen-data-provider";
 import TestDataFactory from "../factories/TestDataFactory";
 import TraceDataFactory from "../factories/TraceDataFactory";
 import RichTextDataFactory from "../factories/RichTextDataFactory";
@@ -122,7 +122,9 @@ export default class DgContentControls {
             contentControlOptions.data.testSuiteArray,
             contentControlOptions.title,
             contentControlOptions.headingLevel,
-            contentControlOptions.data.includeAttachments
+            contentControlOptions.data.includeAttachments,
+            contentControlOptions.data.includeRequirements,
+            contentControlOptions.data.includeCustomerId
           );
           break;
         case "change-description-table":
@@ -366,6 +368,8 @@ export default class DgContentControls {
     contentControlTitle: string,
     headingLevel?: number,
     includeAttachments: boolean = true,
+    includeRequirements?: boolean,
+    includeCustomerId?: boolean,
     contentControl?: contentControl
   ) {
     let testDataFactory: TestDataFactory;
@@ -380,6 +384,8 @@ export default class DgContentControls {
         testPlanId,
         testSuiteArray,
         includeAttachments,
+        includeRequirements,
+        includeCustomerId,
         true,
         this.dgDataProviderAzureDevOps,
         this.templatePath,

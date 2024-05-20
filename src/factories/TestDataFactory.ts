@@ -1,4 +1,4 @@
-import DgDataProviderAzureDevOps from '@doc-gen/dg-data-provider-azuredevops'
+import DgDataProviderAzureDevOps from '@elisra-devops/docgen-data-provider'
 import RichTextDataFactory from "./RichTextDataFactory";
 import AttachmentsDataFactory from "./AttachmentsDataFactory";
 import TestResultGroupSummaryDataSkinAdapter from "../adapters/TestResultGroupSummaryDataSkinAdapter";
