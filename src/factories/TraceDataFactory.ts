@@ -127,6 +127,8 @@ export default class TraceDataFactory {
         this.teamProject,
         `${this.testPlanId}`,
         `${this.testPlanId + 1}`,
+        true,
+        true,
         true
       );
 
