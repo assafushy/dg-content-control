@@ -1,4 +1,4 @@
-import DgDataProviderAzureDevOps from '@doc-gen/dg-data-provider-azuredevops'
+import DgDataProviderAzureDevOps from '@elisra-devops/docgen-data-provider'
 import RichTextDataFactory from "./RichTextDataFactory";
 import AttachmentsDataFactory from "./AttachmentsDataFactory";
 import TestResultGroupSummaryDataSkinAdapter from "../adapters/TestResultGroupSummaryDataSkinAdapter";
@@ -25,6 +25,8 @@ export default class TestDataFactory {
   adoptedTestData: any;
   templatePath: string;
   includeAttachments: boolean;
+  includeRequirements: boolean;
+  includeCustomerId: boolean;
   includeTestResults: boolean;
   minioEndPoint: string;
   minioAccessKey: string;
@@ -39,6 +41,8 @@ export default class TestDataFactory {
     testPlanId: number = null,
     testSuiteArray: number[] = null,
     includeAttachments: boolean = true,
+    includeRequirements: boolean = false,
+    includeCustomerId: boolean = false,
     includeTestResults: boolean = false,
     dgDataProvider: any,
     templatePath = "",
@@ -51,6 +55,8 @@ export default class TestDataFactory {
     this.testPlanId = testPlanId;
     this.testSuiteArray = testSuiteArray;
     this.includeAttachments = includeAttachments;
+    this.includeRequirements = includeRequirements
+    this.includeCustomerId = includeCustomerId
     this.dgDataProvider = dgDataProvider;
     this.templatePath = templatePath;
     this.includeTestResults = includeTestResults;
@@ -94,7 +100,9 @@ export default class TestDataFactory {
         this.teamProject,
         `${this.testPlanId}`,
         `${this.testPlanId + 1}`,
-        true
+        true,
+        this.includeRequirements,
+        this.includeCustomerId
       );
 
       logger.debug(
@@ -261,6 +269,7 @@ export default class TestDataFactory {
                   this.templatePath,
                   this.teamProject
                 );
+
                 await richTextFactory.createRichTextContent(this.attachmentsBucketName, this.minioEndPoint, this.minioAccessKey, this.minioSecretKey, this.PAT);
                 richTextFactory.attachmentMinioData.forEach(item => {
                   let attachmentBucketData = {
@@ -325,6 +334,7 @@ export default class TestDataFactory {
                             );
                           }
                         );
+
                         return this.includeAttachments
                           ? {
                               fields: [
@@ -373,7 +383,34 @@ export default class TestDataFactory {
                     }
                   ];
                 }
+                let testCaseRequirements = testCase.relations.map((relation, index) => {
+                  let fields = [
+                    {
+                      name: "#",
+                      value: index + 1
+                    },
+                    {
+                      name: "Req ID",
+                      value: relation.id
+                    },
+                    {
+                      name: "Req Title",
+                      value: relation.title
+                    }
+                  ];
+                
+                  // Insert customer ID conditionally between Req ID and Req Title
+                  if (this.includeCustomerId && relation.customerId) {
+                    fields.splice(2, 0, { // Inserting at index 2, right before Req Title
+                      name: "Customer ID",
+                      value: relation.customerId
+                    });
+                  }
+                
+                  return { fields };
+                });
 
+              
                 let filteredTestCaseAttachments = testCase.attachmentsData
                 .filter(
                   attachment =>
@@ -394,7 +431,8 @@ export default class TestDataFactory {
                 let adoptedTestCaseData = {
                   testCaseHeaderSkinData,
                   testCaseStepsSkinData,
-                  testCaseAttachments
+                  testCaseAttachments, 
+                  testCaseRequirements
                 };
                 return adoptedTestCaseData;
               })

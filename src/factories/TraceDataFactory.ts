@@ -1,4 +1,4 @@
-import DgDataProviderAzureDevOps from '@doc-gen/dg-data-provider-azuredevops'
+import DgDataProviderAzureDevOps from '@elisra-devops/docgen-data-provider'
 import logger from "../services/logger";
 
 const styles = {
@@ -127,6 +127,8 @@ export default class TraceDataFactory {
         this.teamProject,
         `${this.testPlanId}`,
         `${this.testPlanId + 1}`,
+        true,
+        true,
         true
       );
 

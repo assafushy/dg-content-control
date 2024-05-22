@@ -1,5 +1,5 @@
-import Skins from "@doc-gen/dg-skins";
-import DgDataProviderAzureDevOps from "@doc-gen/dg-data-provider-azuredevops";
+import Skins from "@elisra-devops/docgen-skins";
+import DgDataProviderAzureDevOps from "@elisra-devops/docgen-data-provider";
 import TestDataFactory from "../factories/TestDataFactory";
 import TraceDataFactory from "../factories/TraceDataFactory";
 import RichTextDataFactory from "../factories/RichTextDataFactory";
@@ -63,13 +63,18 @@ export default class DgContentControls {
     {
       this.templatePath = "template path"
     }
+    console.log("^^^^^^^^^^this.skins^^^^^^^^^^^^^^^^", this.skins)
     this.skins = new Skins("json",this.templatePath)
+    console.log("^^^^^^^^^^this.skins2^^^^^^^^^^^^^^^", this.skins)
+    console.log("^^^^^^^^^^templatePath^^^^^^^^^^^^^^^", this.templatePath)
+
     logger.debug(`Initilized`);
     return true;
   } //init
 
   async generateDocTemplate() {
     try {
+      console.log("this.skins.getDocumentSkin()", this.skins.getDocumentSkin())
       return this.skins.getDocumentSkin();
     } catch (error) {
       logger.error(`Error initlizing Skins:
@@ -95,8 +100,11 @@ export default class DgContentControls {
             contentControlOptions.data.testSuiteArray,
             contentControlOptions.title,
             contentControlOptions.headingLevel,
-            contentControlOptions.data.includeAttachments
+            contentControlOptions.data.includeAttachments,
+            contentControlOptions.data.includeRequirements,
+            contentControlOptions.data.includeCustomerId
           );
+
           break;
         case "trace-table":
           contentControlData = await this.addTraceTableContent(
@@ -114,7 +122,9 @@ export default class DgContentControls {
             contentControlOptions.data.testSuiteArray,
             contentControlOptions.title,
             contentControlOptions.headingLevel,
-            contentControlOptions.data.includeAttachments
+            contentControlOptions.data.includeAttachments,
+            contentControlOptions.data.includeRequirements,
+            contentControlOptions.data.includeCustomerId
           );
           break;
         case "change-description-table":
@@ -179,11 +189,14 @@ export default class DgContentControls {
           field.name === "Description" ||
           field.name === "Test Description:"
         ) {
+          console.log("index field", field)
+          console.log("index t", t)
           let richTextFactory = new RichTextDataFactory(
             field.value || "No description",
             this.templatePath,
             this.teamProjectName
           );
+          console.log("index richTextFactory", richTextFactory)
           await richTextFactory.createRichTextContent(
             this.attachmentsBucketName,
             this.minioEndPoint,
@@ -194,6 +207,7 @@ export default class DgContentControls {
           this.minioAttachmentData = this.minioAttachmentData.concat(richTextFactory.attachmentMinioData)
           res[i].fields[t].richText = richTextFactory.skinDataContentControls;
         }
+        console.log("this.minioAttachmentData inedex", this.minioAttachmentData)
       });
     });
     try {
@@ -228,6 +242,8 @@ export default class DgContentControls {
     contentControlTitle: string,
     headingLevel?: number,
     includeAttachments: boolean = true,
+    includeRequirements?: boolean,
+    includeCustomerId?: boolean,
     contentControl?: contentControl
   ) {
     logger.debug(`fetching test data with params:
@@ -242,6 +258,8 @@ export default class DgContentControls {
         testPlanId,
         testSuiteArray,
         includeAttachments,
+        includeRequirements,
+        includeCustomerId,
         false,
         this.dgDataProviderAzureDevOps,
         this.templatePath,
@@ -273,6 +291,7 @@ export default class DgContentControls {
         headingLevel,
         includeAttachments
       );
+
       skins.forEach(skin => {
         // Check if skin is of type 'paragraph' and contains the text 'Test Description:'
         if (skin.type === 'paragraph' && skin.runs.some(run => run.text === 'Test Description:')) {
@@ -349,6 +368,8 @@ export default class DgContentControls {
     contentControlTitle: string,
     headingLevel?: number,
     includeAttachments: boolean = true,
+    includeRequirements?: boolean,
+    includeCustomerId?: boolean,
     contentControl?: contentControl
   ) {
     let testDataFactory: TestDataFactory;
@@ -363,6 +384,8 @@ export default class DgContentControls {
         testPlanId,
         testSuiteArray,
         includeAttachments,
+        includeRequirements,
+        includeCustomerId,
         true,
         this.dgDataProviderAzureDevOps,
         this.templatePath,
