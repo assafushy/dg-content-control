@@ -384,31 +384,31 @@ export default class TestDataFactory {
                   ];
                 }
                 let testCaseRequirements = testCase.relations.map((relation, index) => {
-                  // Start with the basic fields
                   let fields = [
-                      {
-                          name: "#",
-                          value: index + 1
-                      },
-                      {
-                          name: "Req ID",
-                          value: relation.id
-                      },
-                      {
-                          name: "Req Title",
-                          value: relation.title
-                      }
+                    {
+                      name: "#",
+                      value: index + 1
+                    },
+                    {
+                      name: "Req ID",
+                      value: relation.id
+                    },
+                    {
+                      name: "Req Title",
+                      value: relation.title
+                    }
                   ];
-                  // Conditionally add customerId if includeCustomerId is true
+                
+                  // Insert customer ID conditionally between Req ID and Req Title
                   if (this.includeCustomerId && relation.customerId) {
-                      fields.push({
-                          name: "Customer Req ID",
-                          value: relation.customerId
-                      });
+                    fields.splice(2, 0, { // Inserting at index 2, right before Req Title
+                      name: "Customer ID",
+                      value: relation.customerId
+                    });
                   }
-              
+                
                   return { fields };
-              });
+                });
 
               
                 let filteredTestCaseAttachments = testCase.attachmentsData
